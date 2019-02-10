@@ -26,6 +26,8 @@
 	<string>Copyright © 2019 Simon Cozens. All rights reserved.</string>
 	<key>NSMainStoryboardFile</key>
 	<string>Main</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Read and organise your photos</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>

@@ -685,7 +685,7 @@
         <scene sceneID="R2V-B0-nI4">
             <objects>
                 <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
-                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
+                    <window key="window" title="Brownie" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="196" y="240" width="480" height="270"/>
@@ -827,10 +827,10 @@
         <!--Tab View Controller-->
         <scene sceneID="gKe-Sf-T7J">
             <objects>
-                <tabViewController selectedTabViewItemIndex="0" id="IQm-C1-6Bp" sceneMemberID="viewController">
+                <tabViewController selectedTabViewItemIndex="1" id="IQm-C1-6Bp" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem label="Table" identifier="" id="BoB-Ga-aI0"/>
-                        <tabViewItem label="Map" identifier="" id="GrB-xS-pbj"/>
+                        <tabViewItem label="Map" id="J27-Bc-Ais"/>
                     </tabViewItems>
                     <tabView key="tabView" type="noTabsNoBorder" id="zPW-8u-Eo7">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
@@ -843,7 +843,7 @@
                     <connections>
                         <outlet property="tabView" destination="zPW-8u-Eo7" id="ILX-TC-ALP"/>
                         <segue destination="dbs-hZ-mS7" kind="relationship" relationship="tabItems" id="MPy-yl-3eI"/>
-                        <segue destination="Q6O-RY-Y7o" kind="relationship" relationship="tabItems" id="gFI-SB-Co4"/>
+                        <segue destination="pa6-q4-lkr" kind="relationship" relationship="tabItems" id="kGL-hH-CKc"/>
                     </connections>
                 </tabViewController>
                 <customObject id="laR-92-eod" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -1114,23 +1114,97 @@
             <point key="canvasLocation" x="1324" y="1351"/>
         </scene>
         <!--Map View Controller-->
-        <scene sceneID="oYv-qu-TZY">
+        <scene sceneID="BxI-DA-hUb">
             <objects>
-                <viewController storyboardIdentifier="MapViewController" id="Q6O-RY-Y7o" userLabel="Map View Controller" customClass="MapViewController" customModule="Brownie" customModuleProvider="target" sceneMemberID="viewController">
-                    <mapView key="view" mapType="standard" id="wyK-2o-Y6G">
+                <viewController id="pa6-q4-lkr" customClass="MapViewController" customModule="Brownie" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="iz4-Uc-PYQ">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <connections>
-                            <outlet property="delegate" destination="Q6O-RY-Y7o" id="Me2-5Z-Pst"/>
-                        </connections>
-                    </mapView>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <splitView arrangesAllSubviews="NO" dividerStyle="paneSplitter" translatesAutoresizingMaskIntoConstraints="NO" id="CO7-7g-Cgj">
+                                <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                                <subviews>
+                                    <customView id="G0t-hW-kbZ">
+                                        <rect key="frame" x="0.0" y="0.0" width="450" height="210"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <subviews>
+                                            <mapView mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="tVs-1F-Qii">
+                                                <rect key="frame" x="0.0" y="0.0" width="450" height="210"/>
+                                                <connections>
+                                                    <outlet property="delegate" destination="pa6-q4-lkr" id="Wbh-8H-175"/>
+                                                </connections>
+                                            </mapView>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="trailing" secondItem="tVs-1F-Qii" secondAttribute="trailing" id="50Z-Lj-q7F"/>
+                                            <constraint firstAttribute="bottom" secondItem="tVs-1F-Qii" secondAttribute="bottom" id="Fzh-It-pmC"/>
+                                            <constraint firstItem="tVs-1F-Qii" firstAttribute="top" secondItem="G0t-hW-kbZ" secondAttribute="top" id="a74-hd-cQd"/>
+                                            <constraint firstItem="tVs-1F-Qii" firstAttribute="leading" secondItem="G0t-hW-kbZ" secondAttribute="leading" id="pKL-oU-NKo"/>
+                                        </constraints>
+                                    </customView>
+                                    <customView id="kfg-xL-yOG">
+                                        <rect key="frame" x="0.0" y="220" width="450" height="80"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <subviews>
+                                            <scrollView wantsLayer="YES" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zRl-fS-Byx">
+                                                <rect key="frame" x="0.0" y="0.0" width="450" height="80"/>
+                                                <clipView key="contentView" id="UM0-LT-IIZ">
+                                                    <rect key="frame" x="1" y="1" width="448" height="78"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                    <subviews>
+                                                        <collectionView id="l2t-Iv-a7K">
+                                                            <rect key="frame" x="0.0" y="0.0" width="448" height="158"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                                            <collectionViewFlowLayout key="collectionViewLayout" minimumInteritemSpacing="10" minimumLineSpacing="10" scrollDirection="horizontal" id="ski-jn-5iV">
+                                                                <size key="itemSize" width="200" height="200"/>
+                                                            </collectionViewFlowLayout>
+                                                            <color key="primaryBackgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            <connections>
+                                                                <outlet property="dataSource" destination="pa6-q4-lkr" id="0fI-AO-GeH"/>
+                                                                <outlet property="delegate" destination="pa6-q4-lkr" id="MH6-0J-9G0"/>
+                                                            </connections>
+                                                        </collectionView>
+                                                    </subviews>
+                                                </clipView>
+                                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="5gT-KW-cjN">
+                                                    <rect key="frame" x="1" y="63" width="448" height="16"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                </scroller>
+                                                <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="s76-nZ-5Ev">
+                                                    <rect key="frame" x="433" y="1" width="16" height="78"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                </scroller>
+                                            </scrollView>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="bottom" secondItem="zRl-fS-Byx" secondAttribute="bottom" id="Aql-mM-muA"/>
+                                            <constraint firstAttribute="trailing" secondItem="zRl-fS-Byx" secondAttribute="trailing" id="MYI-FK-nMT"/>
+                                            <constraint firstItem="zRl-fS-Byx" firstAttribute="leading" secondItem="kfg-xL-yOG" secondAttribute="leading" id="cUB-AX-K9K"/>
+                                            <constraint firstItem="zRl-fS-Byx" firstAttribute="top" secondItem="kfg-xL-yOG" secondAttribute="top" id="tKP-Lq-W23"/>
+                                        </constraints>
+                                    </customView>
+                                </subviews>
+                                <holdingPriorities>
+                                    <real value="250"/>
+                                    <real value="250"/>
+                                </holdingPriorities>
+                            </splitView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="CO7-7g-Cgj" firstAttribute="top" secondItem="iz4-Uc-PYQ" secondAttribute="top" id="3q7-WW-gHf"/>
+                            <constraint firstAttribute="trailing" secondItem="CO7-7g-Cgj" secondAttribute="trailing" id="4ok-y1-yNI"/>
+                            <constraint firstItem="CO7-7g-Cgj" firstAttribute="leading" secondItem="iz4-Uc-PYQ" secondAttribute="leading" id="CdL-IM-lyU"/>
+                            <constraint firstAttribute="bottom" secondItem="CO7-7g-Cgj" secondAttribute="bottom" id="DG7-bE-aIk"/>
+                        </constraints>
+                    </view>
                     <connections>
-                        <outlet property="mapView" destination="wyK-2o-Y6G" id="eIU-Wq-t1X"/>
+                        <outlet property="collectionView" destination="l2t-Iv-a7K" id="17T-uY-fEZ"/>
+                        <outlet property="mapView" destination="tVs-1F-Qii" id="vP4-Lk-Fnt"/>
                     </connections>
                 </viewController>
-                <customObject id="y19-L2-YLI" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <customObject id="k3u-qz-yT7" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1324" y="1723"/>
+            <point key="canvasLocation" x="1228" y="1804"/>
         </scene>
     </scenes>
     <resources>

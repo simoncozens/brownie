@@ -68,6 +68,7 @@ class CustomAnnotationView: MKAnnotationView {
     override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
         self.label = NSTextField(frame: annotationFrame.offsetBy(dx: 0, dy: -6))
         self.label.isEnabled = false
+        
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
         guard annotation is PhotoCluster else { return }
         guard let item = (annotation as! PhotoCluster).items.first else { return }

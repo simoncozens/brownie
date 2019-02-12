@@ -7,13 +7,39 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F43CD559220F7A7F00754EA1 /* BaseNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43CD557220F7A7F00754EA1 /* BaseNode.swift */; };
+		F43CD55A220F7A8000754EA1 /* ChildNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43CD558220F7A7F00754EA1 /* ChildNode.swift */; };
+		F43CD55D220F862100754EA1 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43CD55C220F862100754EA1 /* MapViewController.swift */; };
+		F43CD55F220F8A5A00754EA1 /* OutlineController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43CD55E220F8A5A00754EA1 /* OutlineController.swift */; };
+		F43CD561220F8BD300754EA1 /* TableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43CD560220F8BD300754EA1 /* TableController.swift */; };
+		F44C90EF220C82CE00253B79 /* PhotoCluster.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44C90EE220C82CE00253B79 /* PhotoCluster.swift */; };
+		F44C90F1220C878300253B79 /* Operations.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44C90F0220C878300253B79 /* Operations.swift */; };
+		F44C90F3220DB1A900253B79 /* JPEGInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44C90F2220DB1A900253B79 /* JPEGInfo.swift */; };
+		F44C90F5220DB25A00253B79 /* PhotoStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44C90F4220DB25A00253B79 /* PhotoStore.swift */; };
+		F44C90F7220DB95700253B79 /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44C90F6220DB95700253B79 /* LRUCache.swift */; };
+		F44C90F9220DB98200253B79 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44C90F8220DB98200253B79 /* LinkedList.swift */; };
+		F48E3D0F220F026B00C9ADB0 /* ThumbnailCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F48E3D0E220F026B00C9ADB0 /* ThumbnailCache.swift */; };
 		F4C44B1D220C45E700B679ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C44B1C220C45E700B679ED /* AppDelegate.swift */; };
 		F4C44B1F220C45E700B679ED /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C44B1E220C45E700B679ED /* ViewController.swift */; };
 		F4C44B21220C45E800B679ED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4C44B20220C45E800B679ED /* Assets.xcassets */; };
 		F4C44B24220C45E800B679ED /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F4C44B22220C45E800B679ED /* Main.storyboard */; };
+		F4E62E312212E55200347821 /* CollectionViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E62E302212E55200347821 /* CollectionViewItem.swift */; };
+		F4E62E332212E65E00347821 /* CollectionViewItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4E62E322212E65E00347821 /* CollectionViewItem.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F43CD557220F7A7F00754EA1 /* BaseNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseNode.swift; sourceTree = "<group>"; };
+		F43CD558220F7A7F00754EA1 /* ChildNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChildNode.swift; sourceTree = "<group>"; };
+		F43CD55C220F862100754EA1 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		F43CD55E220F8A5A00754EA1 /* OutlineController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlineController.swift; sourceTree = "<group>"; };
+		F43CD560220F8BD300754EA1 /* TableController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableController.swift; sourceTree = "<group>"; };
+		F44C90EE220C82CE00253B79 /* PhotoCluster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCluster.swift; sourceTree = "<group>"; };
+		F44C90F0220C878300253B79 /* Operations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Operations.swift; sourceTree = "<group>"; };
+		F44C90F2220DB1A900253B79 /* JPEGInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPEGInfo.swift; sourceTree = "<group>"; };
+		F44C90F4220DB25A00253B79 /* PhotoStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoStore.swift; sourceTree = "<group>"; };
+		F44C90F6220DB95700253B79 /* LRUCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
+		F44C90F8220DB98200253B79 /* LinkedList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
+		F48E3D0E220F026B00C9ADB0 /* ThumbnailCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCache.swift; sourceTree = "<group>"; };
 		F4C44B19220C45E700B679ED /* Brownie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Brownie.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4C44B1C220C45E700B679ED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F4C44B1E220C45E700B679ED /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -21,6 +47,8 @@
 		F4C44B23220C45E800B679ED /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F4C44B25220C45E800B679ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F4C44B26220C45E800B679ED /* Brownie.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Brownie.entitlements; sourceTree = "<group>"; };
+		F4E62E302212E55200347821 /* CollectionViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewItem.swift; sourceTree = "<group>"; };
+		F4E62E322212E65E00347821 /* CollectionViewItem.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CollectionViewItem.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -34,6 +62,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F43CD55B220F7A8400754EA1 /* Tree Support */ = {
+			isa = PBXGroup;
+			children = (
+				F43CD557220F7A7F00754EA1 /* BaseNode.swift */,
+				F43CD558220F7A7F00754EA1 /* ChildNode.swift */,
+			);
+			path = "Tree Support";
+			sourceTree = "<group>";
+		};
 		F4C44B10220C45E700B679ED = {
 			isa = PBXGroup;
 			children = (
@@ -55,10 +92,23 @@
 			children = (
 				F4C44B1C220C45E700B679ED /* AppDelegate.swift */,
 				F4C44B1E220C45E700B679ED /* ViewController.swift */,
+				F43CD55E220F8A5A00754EA1 /* OutlineController.swift */,
+				F43CD560220F8BD300754EA1 /* TableController.swift */,
+				F43CD55C220F862100754EA1 /* MapViewController.swift */,
+				F4E62E302212E55200347821 /* CollectionViewItem.swift */,
+				F44C90F6220DB95700253B79 /* LRUCache.swift */,
+				F44C90F8220DB98200253B79 /* LinkedList.swift */,
+				F44C90F2220DB1A900253B79 /* JPEGInfo.swift */,
+				F44C90F4220DB25A00253B79 /* PhotoStore.swift */,
+				F48E3D0E220F026B00C9ADB0 /* ThumbnailCache.swift */,
+				F44C90EE220C82CE00253B79 /* PhotoCluster.swift */,
+				F44C90F0220C878300253B79 /* Operations.swift */,
 				F4C44B20220C45E800B679ED /* Assets.xcassets */,
 				F4C44B22220C45E800B679ED /* Main.storyboard */,
+				F4E62E322212E65E00347821 /* CollectionViewItem.xib */,
 				F4C44B25220C45E800B679ED /* Info.plist */,
 				F4C44B26220C45E800B679ED /* Brownie.entitlements */,
+				F43CD55B220F7A8400754EA1 /* Tree Support */,
 			);
 			path = Brownie;
 			sourceTree = "<group>";
@@ -95,6 +145,11 @@
 				TargetAttributes = {
 					F4C44B18220C45E700B679ED = {
 						CreatedOnToolsVersion = 10.1;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 0;
+							};
+						};
 					};
 				};
 			};
@@ -123,6 +178,7 @@
 			files = (
 				F4C44B21220C45E800B679ED /* Assets.xcassets in Resources */,
 				F4C44B24220C45E800B679ED /* Main.storyboard in Resources */,
+				F4E62E332212E65E00347821 /* CollectionViewItem.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,8 +189,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F43CD561220F8BD300754EA1 /* TableController.swift in Sources */,
+				F43CD55A220F7A8000754EA1 /* ChildNode.swift in Sources */,
+				F43CD559220F7A7F00754EA1 /* BaseNode.swift in Sources */,
 				F4C44B1F220C45E700B679ED /* ViewController.swift in Sources */,
 				F4C44B1D220C45E700B679ED /* AppDelegate.swift in Sources */,
+				F48E3D0F220F026B00C9ADB0 /* ThumbnailCache.swift in Sources */,
+				F43CD55F220F8A5A00754EA1 /* OutlineController.swift in Sources */,
+				F44C90F3220DB1A900253B79 /* JPEGInfo.swift in Sources */,
+				F4E62E312212E55200347821 /* CollectionViewItem.swift in Sources */,
+				F44C90EF220C82CE00253B79 /* PhotoCluster.swift in Sources */,
+				F43CD55D220F862100754EA1 /* MapViewController.swift in Sources */,
+				F44C90F7220DB95700253B79 /* LRUCache.swift in Sources */,
+				F44C90F5220DB25A00253B79 /* PhotoStore.swift in Sources */,
+				F44C90F9220DB98200253B79 /* LinkedList.swift in Sources */,
+				F44C90F1220C878300253B79 /* Operations.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,7 +340,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Brownie/Brownie.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = GHYRZM4TBD;
@@ -290,7 +358,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Brownie/Brownie.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = GHYRZM4TBD;

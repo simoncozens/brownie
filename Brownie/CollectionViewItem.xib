@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="CollectionViewItem" customModule="Brownie" customModuleProvider="target"/>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="YdD-kr-uzW">
+            <rect key="frame" x="0.0" y="0.0" width="190" height="90"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fXY-5t-ELe">
+                    <rect key="frame" x="-3" y="17" width="196" height="76"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" imageFrameStyle="photo" id="Zen-xM-QgW"/>
+                </imageView>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3Op-1L-r2J">
+                    <rect key="frame" x="-2" y="3" width="194" height="17"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Label" id="KcN-Ry-juL">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+            </subviews>
+            <constraints>
+                <constraint firstItem="3Op-1L-r2J" firstAttribute="top" secondItem="fXY-5t-ELe" secondAttribute="bottom" id="5Wh-sa-udp"/>
+                <constraint firstItem="3Op-1L-r2J" firstAttribute="leading" secondItem="YdD-kr-uzW" secondAttribute="leading" id="9Ix-NQ-NIX"/>
+                <constraint firstItem="fXY-5t-ELe" firstAttribute="trailing" secondItem="3Op-1L-r2J" secondAttribute="trailing" id="Lhn-fF-dX5"/>
+                <constraint firstAttribute="trailing" secondItem="3Op-1L-r2J" secondAttribute="trailing" id="Xc7-v5-aiI"/>
+                <constraint firstAttribute="bottom" secondItem="fXY-5t-ELe" secondAttribute="bottom" constant="20" symbolic="YES" id="ZgR-qZ-OZe"/>
+                <constraint firstItem="fXY-5t-ELe" firstAttribute="top" secondItem="YdD-kr-uzW" secondAttribute="top" id="eRP-GV-teI"/>
+                <constraint firstItem="fXY-5t-ELe" firstAttribute="leading" secondItem="3Op-1L-r2J" secondAttribute="leading" id="fBY-hB-bx1"/>
+            </constraints>
+            <connections>
+                <outlet property="menu" destination="BXW-X4-sOD" id="nS4-xJ-DBc"/>
+            </connections>
+            <point key="canvasLocation" x="41" y="-32"/>
+        </customView>
+        <collectionViewItem id="5qQ-TV-G2h" customClass="CollectionViewItem" customModule="Brownie" customModuleProvider="target">
+            <connections>
+                <outlet property="imageView" destination="fXY-5t-ELe" id="ToM-LR-pJr"/>
+                <outlet property="textField" destination="3Op-1L-r2J" id="WHQ-Ug-1am"/>
+                <outlet property="view" destination="YdD-kr-uzW" id="XKN-3k-s75"/>
+            </connections>
+        </collectionViewItem>
+        <menu id="BXW-X4-sOD">
+            <items>
+                <menuItem title="Reveal in Finder" id="ao8-HC-6XD">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="revealInFinderWithSender:" target="5qQ-TV-G2h" id="IVL-Nc-wVc"/>
+                    </connections>
+                </menuItem>
+            </items>
+            <point key="canvasLocation" x="265" y="-116"/>
+        </menu>
+    </objects>
+</document>

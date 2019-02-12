@@ -11,6 +11,8 @@ import MapKit
 
 extension Notification.Name {
     static let MorePhotosHaveArrived = NSNotification.Name("MorePhotosHaveArrived")
+    static let SyncYearTree = NSNotification.Name("SyncYearTree")
+
 }
 
 class ViewController: NSSplitViewController {

@@ -11,8 +11,17 @@ import MapKit
 
 class MapViewController : NSViewController {
     @IBOutlet var mapView: MKMapView!
+    @IBOutlet var collectionView: NSCollectionView!
     override func viewDidLoad() {
         NotificationCenter.default.addObserver(self, selector: #selector(rebuildAnnotations), name: NSNotification.Name.MorePhotosHaveArrived, object: nil)
+    }
+    
+    var visibleAnnotations : [PhotoCluster] {
+        return mapView.annotations(in: mapView.visibleMapRect).map { obj -> PhotoCluster in return obj as! PhotoCluster }
+    }
+    
+    var visibleImages: [JPEGInfo] {
+        return visibleAnnotations.flatMap { $0.items }
     }
     
     var curMapScale = Double(1.0)
@@ -33,6 +42,7 @@ class MapViewController : NSViewController {
 //            self.photocount.stringValue = "\(self.photoStore.semaphoredCountItems())  photos"
             self.mapView.removeAnnotations(toRemove)
             self.mapView.addAnnotations(toAdd)
+            self.collectionView.reloadData()
         }
     }
 }
@@ -46,6 +56,9 @@ extension MapViewController :MKMapViewDelegate {
             DispatchQueue.global(qos: .default).async {
                 self.rebuildAnnotations()
             }
+        }
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
         }
     }
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -67,4 +80,24 @@ extension MapViewController :MKMapViewDelegate {
             return customAnnotationView
         }
     }
+}
+
+extension MapViewController : NSCollectionViewDelegate, NSCollectionViewDataSource {
+    
+    // 2
+    func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
+        return visibleImages.count
+    }
+    
+    // 3
+    func collectionView(_ itemForRepresentedObjectAtcollectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
+        // 4
+        let item = self.collectionView.makeItem(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "CollectionViewItem"), for: indexPath)
+        guard let collectionViewItem = item as? CollectionViewItem else {return item}
+        if let i = indexPath.last {
+            collectionViewItem.item = visibleImages[i]
+        }
+        return item
+    }
+    
 }

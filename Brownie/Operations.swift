@@ -49,16 +49,8 @@ class ProcessEXIF: Operation {
             let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as Dictionary?
             pthread_rwlock_wrlock(&(store.databaselock))
             item.properties = imageProperties
+            store.fileInYearTree(item)
             pthread_rwlock_unlock(&(store.databaselock))
-
-            if let date = item.isodate {
-                let year = Calendar.current.component(.year, from: date)
-                let n = store.nodeFor(year: year)
-                pthread_rwlock_wrlock(&(store.treelock))
-                n.count = n.count + 1
-                pthread_rwlock_unlock(&(store.treelock))
-            }
-            
         }
         store.processLocation(item)
 
@@ -76,7 +68,6 @@ class AddToStore: Operation {
     }
     
     override func main() {
-        let f = item.path
         if isCancelled { return }
         store.semaphoredAddItem(item)
     }

@@ -36,15 +36,36 @@ class OutlineController: NSViewController, NSOutlineViewDelegate, NSOutlineViewD
         photoStore.treeController = treeController
         let fileManager = FileManager.default
         let picsURL = fileManager.urls(for: .picturesDirectory, in: .userDomainMask)[0]
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.syncYearTree(_:)), name: NSNotification.Name.SyncYearTree, object: nil)
+
         DispatchQueue.global(qos: .default).async {
             self.photoStore.addDirectory(picsURL, periodicUpdate: {() in
-                print("Hi! I'm reloading my stuff!")
                 DispatchQueue.main.async { self.myOutlineView?.reloadData() }
                 NotificationCenter.default.post(name: NSNotification.Name.MorePhotosHaveArrived, object: nil)
                 
             })
         }
         
+    }
+
+    @objc func syncYearTree(_ n: NSNotification) {
+        guard let yeartree = n.userInfo?["yeartree"] as? Dictionary<Int,YearTree> else { return }
+        let datesindex = IndexPath(index: 0) // XXX
+        let datesnode = treeController!.arrangedObjects.descendant(at: datesindex)?.representedObject as! BaseNode
+        // For now I am going to be stupid
+        DispatchQueue.main.sync {
+            self.myOutlineView.isHidden = true
+            datesnode.children = []
+            for year in yeartree.keys.sorted() {
+                let last = IndexPath(index: datesnode.children.count)
+                let node = ChildNode()
+                node.nodeTitle = String(year)
+                node.count = yeartree[year]!.count
+                    self.treeController.insert(node, atArrangedObjectIndexPath: datesindex.appending(last))
+            }
+            self.myOutlineView.isHidden = false
+        }
     }
 
     func populateBaseContents() {
@@ -96,11 +117,12 @@ class OutlineController: NSViewController, NSOutlineViewDelegate, NSOutlineViewD
                 result = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "Separator"), owner: self)
             } else {
                 var label = node.nodeTitle
-                pthread_rwlock_rdlock(&(photoStore.treelock))
+                // I'm on the main thread anyway, right?
+//                pthread_rwlock_rdlock(&(photoStore.treelock))
                 if node.count > 0 {
                     label = label + " (" + String(node.count) + ")"
                 }
-                pthread_rwlock_unlock(&(photoStore.treelock))
+//                pthread_rwlock_unlock(&(photoStore.treelock))
 
                 (result as! NSTableCellView).textField!.stringValue = label
                 (result as! NSTableCellView).imageView!.image = node.nodeIcon

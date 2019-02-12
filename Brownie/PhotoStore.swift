@@ -8,6 +8,24 @@
 
 import Foundation
 import MapKit
+
+class DayTree {
+    var count: Int = 0
+    var members: [JPEGInfo] = []
+}
+
+class MonthTree {
+    var count: Int = 0
+    var members: [JPEGInfo] = []
+    var days: Dictionary<Int,DayTree> = [:]
+}
+
+class YearTree {
+    var count: Int = 0
+    var members: [JPEGInfo] = []
+    var months: Dictionary<Int,MonthTree> = [:]
+}
+
 class PhotoStore {
     var regionRect = MKMapRect.null
     var annotations: [MKAnnotation] = []
@@ -16,6 +34,7 @@ class PhotoStore {
     var clusterPrecision :Double = -1.0
     var pendingOperations = PendingOperations()
     var allItems: [JPEGInfo] = []
+    var yearTree: Dictionary<Int, YearTree> = [:]
     var countAtLastReload = 0
     var thumbnailStore: LRUCache<URL> = LRUCache(1000)
     var filteredItems: [JPEGInfo] {
@@ -93,38 +112,24 @@ class PhotoStore {
                 self.countAtLastReload = self.allItems.count
                 pthread_rwlock_unlock(&(self.databaselock))
                 periodicUpdate()
+                NotificationCenter.default.post(name: Notification.Name.SyncYearTree, object: nil, userInfo: ["yeartree": self.yearTree])
+                //
             }
-            pthread_rwlock_wrlock(&(self.treelock))
-            sourceNode.count = sourceNode.count + 1
+//            pthread_rwlock_wrlock(&(self.treelock))
+            DispatchQueue.main.async {sourceNode.count = sourceNode.count + 1 }
             self.pendingOperations.exifQueue.addOperation(exif)
-            pthread_rwlock_unlock(&(self.treelock))
+//            pthread_rwlock_unlock(&(self.treelock))
 
         }
         pendingOperations.additionQueue.addOperation(storer)
     }
     
-    func nodeFor(year: Int) -> ChildNode {
-        let datesindex = IndexPath(index: 0) // XXX
-        pthread_rwlock_rdlock(&(self.treelock))
-        let datesnode = treeController!.arrangedObjects.descendant(at: datesindex)?.representedObject as! BaseNode
-        for n in datesnode.children {
-            if n.nodeTitle == String(year) {
-                pthread_rwlock_unlock(&(self.treelock))
-                return n as! ChildNode
-            }
-        }
-        pthread_rwlock_unlock(&(self.treelock))
-
-        let node = ChildNode()
-        node.nodeTitle = String(year)
-        node.count = 0
-        DispatchQueue.main.sync {
-//            pthread_rwlock_wrlock(&(self.treelock))
-            self.treeController!.insert(node, atArrangedObjectIndexPath: datesindex.appending(IndexPath(index: datesnode.children.count)))
-//            pthread_rwlock_unlock(&(self.treelock))
-        }
-
-        return node
+    func fileInYearTree(_ item: JPEGInfo) { // DB is locked
+        guard let date = item.isodate else { return }
+        let year = Calendar.current.component(.year, from: date)
+        if yearTree[year] == nil { yearTree[year] = YearTree() }
+        yearTree[year]!.count = yearTree[year]!.count+1
+        yearTree[year]!.members.append(item)
     }
     
     func processLocation(_ item: JPEGInfo) {

@@ -9,6 +9,11 @@
 import Cocoa
 import MapKit
 
+// Todo:
+// Select year in tree view
+// Sort out photo clustering
+// Speed enhancements
+
 extension Notification.Name {
     static let MorePhotosHaveArrived = NSNotification.Name("MorePhotosHaveArrived")
     static let SyncYearTree = NSNotification.Name("SyncYearTree")

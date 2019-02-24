@@ -8,6 +8,7 @@
 
 import Foundation
 import AppKit
+import SDWebImage
 
 class TableController: NSViewController {
     @IBOutlet weak var tableView: NSTableView!
@@ -37,7 +38,6 @@ extension TableController: NSTableViewDelegate {
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         
-        var image: NSImage?
         var text: String = ""
         var cellIdentifier: String = ""
         
@@ -50,16 +50,6 @@ extension TableController: NSTableViewDelegate {
         let item = PhotoStore.shared.filteredItems[row]
         pthread_rwlock_unlock(&PhotoStore.shared.databaselock)
         if tableColumn == tableView.tableColumns[0] {
-            let maybeThumbnail = ThumbnailCache.with(size: 120).get(item, deferable: true, oncompletion: {
-                image in
-                
-                DispatchQueue.main.async { self.tableView.reloadData(forRowIndexes: IndexSet(integer: row), columnIndexes: IndexSet(integer: 0)) }
-            })
-            if maybeThumbnail != nil {
-                image = maybeThumbnail!
-            } else{
-                
-            }
             cellIdentifier = CellIdentifiers.ThumbnailCell
         } else if tableColumn == tableView.tableColumns[1] {
             text = item.path.lastPathComponent
@@ -75,7 +65,10 @@ extension TableController: NSTableViewDelegate {
         // 3
         if let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(cellIdentifier), owner: nil) as? NSTableCellView {
             cell.textField?.stringValue = text
-            cell.imageView?.image = image ?? nil
+            if tableColumn == tableView.tableColumns[0] {
+                let transformer = SDImageResizingTransformer(size: CGSize(width: 200, height: 200), scaleMode: .aspectFit)
+                cell.imageView?.sd_setImage(with: item.path, placeholderImage: nil, options: [], context: [.imageTransformer: transformer])
+            }
             return cell
         }
         return nil

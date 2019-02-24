@@ -1,13 +1,15 @@
 import Cocoa
+import SDWebImage
+
 class CollectionViewItem: NSCollectionViewItem {
     var item: JPEGInfo? {
         didSet {
             guard isViewLoaded else { return }
             if let item = item {
-                imageView?.image = ThumbnailCache.with(size: 250).get(item, deferable: true, oncompletion: {
-                    newimage in
-                    DispatchQueue.main.async { self.imageView?.image = newimage }
-                })
+                let transformer = SDImageResizingTransformer(size: CGSize(width: 200, height: 70), scaleMode: .aspectFit)
+
+                imageView?.sd_setImage(with: item.path, placeholderImage: nil, options: [], context: [.imageTransformer: transformer])
+                self.textField?.stringValue = item.path.lastPathComponent
             }
         }
     }

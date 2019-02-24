@@ -902,10 +902,10 @@
                                                                 </textField>
                                                             </subviews>
                                                             <constraints>
-                                                                <constraint firstItem="3cH-Bc-DSF" firstAttribute="top" secondItem="KmS-yc-ge2" secondAttribute="top" id="DKB-Kl-kwQ"/>
-                                                                <constraint firstItem="3cH-Bc-DSF" firstAttribute="leading" secondItem="KmS-yc-ge2" secondAttribute="leading" constant="20" id="HZu-2i-Rzo"/>
-                                                                <constraint firstItem="Jgc-YC-RgL" firstAttribute="top" secondItem="3cH-Bc-DSF" secondAttribute="top" id="Op6-cc-YXH"/>
-                                                                <constraint firstAttribute="trailing" secondItem="3cH-Bc-DSF" secondAttribute="trailing" constant="2" id="Z1t-JL-Uyd"/>
+                                                                <constraint firstItem="3cH-Bc-DSF" firstAttribute="top" secondItem="Jgc-YC-RgL" secondAttribute="top" id="0CM-j8-Tdy"/>
+                                                                <constraint firstItem="3cH-Bc-DSF" firstAttribute="leading" secondItem="KmS-yc-ge2" secondAttribute="leading" constant="20" id="X5z-zG-5ql"/>
+                                                                <constraint firstAttribute="trailing" secondItem="3cH-Bc-DSF" secondAttribute="trailing" constant="2" id="XQd-GT-QiS"/>
+                                                                <constraint firstItem="3cH-Bc-DSF" firstAttribute="top" secondItem="KmS-yc-ge2" secondAttribute="top" id="Xyk-bO-9zz"/>
                                                                 <constraint firstItem="Jgc-YC-RgL" firstAttribute="leading" secondItem="KmS-yc-ge2" secondAttribute="leading" constant="-1" id="npG-CU-4bd"/>
                                                                 <constraint firstItem="Jgc-YC-RgL" firstAttribute="centerX" secondItem="KmS-yc-ge2" secondAttribute="centerX" id="oPc-Bw-BbS"/>
                                                                 <constraint firstItem="Jgc-YC-RgL" firstAttribute="centerY" secondItem="KmS-yc-ge2" secondAttribute="centerY" id="sXY-Du-66X"/>
@@ -1146,17 +1146,17 @@
                                         <rect key="frame" x="0.0" y="220" width="450" height="80"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <subviews>
-                                            <scrollView wantsLayer="YES" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zRl-fS-Byx">
+                                            <scrollView wantsLayer="YES" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zRl-fS-Byx">
                                                 <rect key="frame" x="0.0" y="0.0" width="450" height="80"/>
                                                 <clipView key="contentView" id="UM0-LT-IIZ">
                                                     <rect key="frame" x="1" y="1" width="448" height="78"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <collectionView id="l2t-Iv-a7K">
-                                                            <rect key="frame" x="0.0" y="0.0" width="448" height="158"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="448" height="78"/>
+                                                            <autoresizingMask key="autoresizingMask" heightSizable="YES"/>
                                                             <collectionViewFlowLayout key="collectionViewLayout" minimumInteritemSpacing="10" minimumLineSpacing="10" scrollDirection="horizontal" id="ski-jn-5iV">
-                                                                <size key="itemSize" width="200" height="200"/>
+                                                                <size key="itemSize" width="200" height="78"/>
                                                             </collectionViewFlowLayout>
                                                             <color key="primaryBackgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                             <connections>
@@ -1165,13 +1165,14 @@
                                                             </connections>
                                                         </collectionView>
                                                     </subviews>
+                                                    <edgeInsets key="contentInsets" left="0.0" right="0.0" top="0.0" bottom="0.0"/>
                                                 </clipView>
                                                 <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="5gT-KW-cjN">
                                                     <rect key="frame" x="1" y="63" width="448" height="16"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </scroller>
-                                                <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="s76-nZ-5Ev">
-                                                    <rect key="frame" x="433" y="1" width="16" height="78"/>
+                                                <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="s76-nZ-5Ev">
+                                                    <rect key="frame" x="-100" y="-100" width="16" height="78"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </scroller>
                                             </scrollView>

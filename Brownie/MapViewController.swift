@@ -17,11 +17,20 @@ class MapViewController : NSViewController {
     }
     
     var visibleAnnotations : [PhotoCluster] {
-        return mapView.annotations(in: mapView.visibleMapRect).map { obj -> PhotoCluster in return obj as! PhotoCluster }
+        if pthread_rwlock_tryrdlock(&(PhotoStore.shared.clusterstorelock)) == 0 {
+        let annots = mapView.annotations(in: mapView.visibleMapRect).map { obj -> PhotoCluster in return obj as! PhotoCluster }
+        pthread_rwlock_unlock(&(PhotoStore.shared.clusterstorelock))
+        return annots
+        } else { return [] }
     }
     
     var visibleImages: [JPEGInfo] {
-        return visibleAnnotations.flatMap { $0.items }
+        pthread_rwlock_rdlock(&(PhotoStore.shared.clusterstorelock))
+        let items = visibleAnnotations.flatMap {
+            $0.items
+        }
+        pthread_rwlock_unlock(&(PhotoStore.shared.clusterstorelock))
+        return items
     }
     
     var curMapScale = Double(1.0)
@@ -29,17 +38,12 @@ class MapViewController : NSViewController {
         let photoStore = PhotoStore.shared
         print("Doing annotations")
         pthread_rwlock_rdlock(&(photoStore.clusterstorelock))
-        pthread_rwlock_rdlock(&(photoStore.regionrectlock))
-        let annotationset = Set<PhotoCluster>(photoStore.clusterStore.values).filter {
-            photoStore.regionRect.contains(MKMapPoint($0.coordinate))
-        }
+        let annotationset = Set<PhotoCluster>(photoStore.clusterStore.values)
         pthread_rwlock_unlock(&(photoStore.clusterstorelock))
-        pthread_rwlock_unlock(&(photoStore.regionrectlock))
         let currentAnnotations = Set(mapView.annotations as! [PhotoCluster])
         let toRemove = Array(currentAnnotations.subtracting(annotationset))
         let toAdd = Array(annotationset.subtracting(currentAnnotations))
         DispatchQueue.main.async {
-//            self.photocount.stringValue = "\(self.photoStore.semaphoredCountItems())  photos"
             self.mapView.removeAnnotations(toRemove)
             self.mapView.addAnnotations(toAdd)
             self.collectionView.reloadData()
@@ -50,15 +54,24 @@ class MapViewController : NSViewController {
 extension MapViewController :MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         print("Map scale: \(self.mapView.zoomLevel)")
-        if self.mapView.zoomLevel != curMapScale {
-            self.curMapScale = self.mapView.zoomLevel
-            PhotoStore.shared.reroundCoordinates(self.curMapScale)
-            DispatchQueue.global(qos: .default).async {
-                self.rebuildAnnotations()
+        if (PhotoStore.shared.quiescent) {
+            DispatchQueue.main.async {
+                PhotoStore.shared.removeFilter(withTag: "Map")
+                let mapFilter = PhotoFilter(tag: "Map") { photo in
+                    return photo.location != nil &&
+                    self.mapView.visibleMapRect.contains(MKMapPoint(photo.location!))
+                }
+                PhotoStore.shared.addFilter(mapFilter)
+                PhotoStore.shared.rebuildYearTree()
+                if self.mapView.zoomLevel != self.curMapScale {
+                    self.curMapScale = self.mapView.zoomLevel
+                    PhotoStore.shared.reroundCoordinates(self.curMapScale)
+                    DispatchQueue.global(qos: .default).async {
+                        self.rebuildAnnotations()
+                    }
+                }
+                self.collectionView.reloadData()
             }
-        }
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
         }
     }
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -94,8 +107,10 @@ extension MapViewController : NSCollectionViewDelegate, NSCollectionViewDataSour
         // 4
         let item = self.collectionView.makeItem(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "CollectionViewItem"), for: indexPath)
         guard let collectionViewItem = item as? CollectionViewItem else {return item}
-        if let i = indexPath.last {
-            collectionViewItem.item = visibleImages[i]
+        let i = indexPath.last
+        let v = visibleImages
+        if i != nil && i! < v.count {
+            collectionViewItem.item = v[i!]
         }
         return item
     }

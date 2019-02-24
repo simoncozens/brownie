@@ -35,7 +35,7 @@ class OutlineController: NSViewController, NSOutlineViewDelegate, NSOutlineViewD
         self.populateBaseContents()
         photoStore.treeController = treeController
         let fileManager = FileManager.default
-        let picsURL = fileManager.urls(for: .picturesDirectory, in: .userDomainMask)[0]
+        let picsURL = fileManager.urls(for: .picturesDirectory, in: .userDomainMask)[0]//.appendingPathComponent("Brownie/")
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.syncYearTree(_:)), name: NSNotification.Name.SyncYearTree, object: nil)
 
@@ -43,26 +43,40 @@ class OutlineController: NSViewController, NSOutlineViewDelegate, NSOutlineViewD
             self.photoStore.addDirectory(picsURL, periodicUpdate: {() in
                 DispatchQueue.main.async { self.myOutlineView?.reloadData() }
                 NotificationCenter.default.post(name: NSNotification.Name.MorePhotosHaveArrived, object: nil)
-                
             })
         }
         
     }
 
     @objc func syncYearTree(_ n: NSNotification) {
-        guard let yeartree = n.userInfo?["yeartree"] as? Dictionary<Int,YearTree> else { return }
+        let yeartree = PhotoStore.shared.getYearTree()
         let datesindex = IndexPath(index: 0) // XXX
         let datesnode = treeController!.arrangedObjects.descendant(at: datesindex)?.representedObject as! BaseNode
         // For now I am going to be stupid
-        DispatchQueue.main.sync {
+        DispatchQueue.main.async {
             self.myOutlineView.isHidden = true
             datesnode.children = []
             for year in yeartree.keys.sorted() {
                 let last = IndexPath(index: datesnode.children.count)
                 let node = ChildNode()
                 node.nodeTitle = String(year)
+                pthread_rwlock_rdlock(&(PhotoStore.shared.yeartreelock))
                 node.count = yeartree[year]!.count
-                    self.treeController.insert(node, atArrangedObjectIndexPath: datesindex.appending(last))
+                let months = yeartree[year]!.months
+                pthread_rwlock_unlock(&(PhotoStore.shared.yeartreelock))
+                let yearindex = datesindex.appending(last)
+                self.treeController.insert(node, atArrangedObjectIndexPath: yearindex)
+//                var mcount = 0
+//                for month in months.keys.sorted() {
+//                    let node = ChildNode()
+//                    node.nodeTitle = String(month)
+//                    pthread_rwlock_rdlock(&(PhotoStore.shared.yeartreelock))
+//                    node.count = months[month]!.count
+//                    pthread_rwlock_unlock(&(PhotoStore.shared.yeartreelock))
+//                    self.treeController.insert(node, atArrangedObjectIndexPath: yearindex.appending(IndexPath(index: mcount)))
+//                    mcount = mcount + 1
+//                }
+
             }
             self.myOutlineView.isHidden = false
         }
@@ -118,12 +132,9 @@ class OutlineController: NSViewController, NSOutlineViewDelegate, NSOutlineViewD
             } else {
                 var label = node.nodeTitle
                 // I'm on the main thread anyway, right?
-//                pthread_rwlock_rdlock(&(photoStore.treelock))
                 if node.count > 0 {
                     label = label + " (" + String(node.count) + ")"
                 }
-//                pthread_rwlock_unlock(&(photoStore.treelock))
-
                 (result as! NSTableCellView).textField!.stringValue = label
                 (result as! NSTableCellView).imageView!.image = node.nodeIcon
             }

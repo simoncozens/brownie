@@ -9,6 +9,7 @@
 import Foundation
 import MapKit
 import AppKit
+import SDWebImage
 
 class PhotoCluster: NSObject, MKAnnotation {
     var coordinate: CLLocationCoordinate2D
@@ -82,10 +83,13 @@ class CustomAnnotationView: MKAnnotationView {
         self.frame = annotationFrame
         self.label.font = NSFont.systemFont(ofSize: 24, weight: .semibold)
         self.label.textColor = .white
-        self.image = ThumbnailCache.with(size: 100).get(item, deferable: true, oncompletion: {
-            newimage in
-            DispatchQueue.main.async { self.image = newimage }
-        })
+        print("Trying...")
+        let transformer = SDImageResizingTransformer(size: CGSize(width: 200, height: 200), scaleMode: .aspectFit)
+
+        SDWebImageManager.shared.loadImage(with: item.path, options: [], context: [.imageTransformer: transformer], progress: nil, completed: {
+            (image, data, error, cache, finished, url) in
+            DispatchQueue.main.async { self.image = image }
+            })
         self.addSubview(label)
     }
     

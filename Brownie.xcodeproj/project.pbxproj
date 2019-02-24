@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D7E7F9E7C7FE433EE045662 /* Pods_Brownie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 51348AF558D333AF213DA7EB /* Pods_Brownie.framework */; };
 		F43CD559220F7A7F00754EA1 /* BaseNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43CD557220F7A7F00754EA1 /* BaseNode.swift */; };
 		F43CD55A220F7A8000754EA1 /* ChildNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43CD558220F7A7F00754EA1 /* ChildNode.swift */; };
 		F43CD55D220F862100754EA1 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43CD55C220F862100754EA1 /* MapViewController.swift */; };
@@ -16,9 +17,6 @@
 		F44C90F1220C878300253B79 /* Operations.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44C90F0220C878300253B79 /* Operations.swift */; };
 		F44C90F3220DB1A900253B79 /* JPEGInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44C90F2220DB1A900253B79 /* JPEGInfo.swift */; };
 		F44C90F5220DB25A00253B79 /* PhotoStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44C90F4220DB25A00253B79 /* PhotoStore.swift */; };
-		F44C90F7220DB95700253B79 /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44C90F6220DB95700253B79 /* LRUCache.swift */; };
-		F44C90F9220DB98200253B79 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44C90F8220DB98200253B79 /* LinkedList.swift */; };
-		F48E3D0F220F026B00C9ADB0 /* ThumbnailCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F48E3D0E220F026B00C9ADB0 /* ThumbnailCache.swift */; };
 		F4C44B1D220C45E700B679ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C44B1C220C45E700B679ED /* AppDelegate.swift */; };
 		F4C44B1F220C45E700B679ED /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C44B1E220C45E700B679ED /* ViewController.swift */; };
 		F4C44B21220C45E800B679ED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4C44B20220C45E800B679ED /* Assets.xcassets */; };
@@ -28,6 +26,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0F79DFA5A280A61D39BEC838 /* Pods-Brownie.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Brownie.release.xcconfig"; path = "Pods/Target Support Files/Pods-Brownie/Pods-Brownie.release.xcconfig"; sourceTree = "<group>"; };
+		51348AF558D333AF213DA7EB /* Pods_Brownie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Brownie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BAE9ACD67D1C54690AA993D5 /* Pods-Brownie.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Brownie.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Brownie/Pods-Brownie.debug.xcconfig"; sourceTree = "<group>"; };
 		F43CD557220F7A7F00754EA1 /* BaseNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseNode.swift; sourceTree = "<group>"; };
 		F43CD558220F7A7F00754EA1 /* ChildNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChildNode.swift; sourceTree = "<group>"; };
 		F43CD55C220F862100754EA1 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -37,9 +38,6 @@
 		F44C90F0220C878300253B79 /* Operations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Operations.swift; sourceTree = "<group>"; };
 		F44C90F2220DB1A900253B79 /* JPEGInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPEGInfo.swift; sourceTree = "<group>"; };
 		F44C90F4220DB25A00253B79 /* PhotoStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoStore.swift; sourceTree = "<group>"; };
-		F44C90F6220DB95700253B79 /* LRUCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
-		F44C90F8220DB98200253B79 /* LinkedList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
-		F48E3D0E220F026B00C9ADB0 /* ThumbnailCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCache.swift; sourceTree = "<group>"; };
 		F4C44B19220C45E700B679ED /* Brownie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Brownie.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4C44B1C220C45E700B679ED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F4C44B1E220C45E700B679ED /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -49,6 +47,7 @@
 		F4C44B26220C45E800B679ED /* Brownie.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Brownie.entitlements; sourceTree = "<group>"; };
 		F4E62E302212E55200347821 /* CollectionViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewItem.swift; sourceTree = "<group>"; };
 		F4E62E322212E65E00347821 /* CollectionViewItem.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CollectionViewItem.xib; sourceTree = "<group>"; };
+		F4E62E8D221302DF00347821 /* Brownie-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Brownie-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,12 +55,30 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D7E7F9E7C7FE433EE045662 /* Pods_Brownie.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		121B2B94BA59415E2AFAF2A1 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				BAE9ACD67D1C54690AA993D5 /* Pods-Brownie.debug.xcconfig */,
+				0F79DFA5A280A61D39BEC838 /* Pods-Brownie.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		21D73C554872CACDBB298D34 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				51348AF558D333AF213DA7EB /* Pods_Brownie.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		F43CD55B220F7A8400754EA1 /* Tree Support */ = {
 			isa = PBXGroup;
 			children = (
@@ -76,6 +93,8 @@
 			children = (
 				F4C44B1B220C45E700B679ED /* Brownie */,
 				F4C44B1A220C45E700B679ED /* Products */,
+				121B2B94BA59415E2AFAF2A1 /* Pods */,
+				21D73C554872CACDBB298D34 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -96,11 +115,8 @@
 				F43CD560220F8BD300754EA1 /* TableController.swift */,
 				F43CD55C220F862100754EA1 /* MapViewController.swift */,
 				F4E62E302212E55200347821 /* CollectionViewItem.swift */,
-				F44C90F6220DB95700253B79 /* LRUCache.swift */,
-				F44C90F8220DB98200253B79 /* LinkedList.swift */,
 				F44C90F2220DB1A900253B79 /* JPEGInfo.swift */,
 				F44C90F4220DB25A00253B79 /* PhotoStore.swift */,
-				F48E3D0E220F026B00C9ADB0 /* ThumbnailCache.swift */,
 				F44C90EE220C82CE00253B79 /* PhotoCluster.swift */,
 				F44C90F0220C878300253B79 /* Operations.swift */,
 				F4C44B20220C45E800B679ED /* Assets.xcassets */,
@@ -109,6 +125,7 @@
 				F4C44B25220C45E800B679ED /* Info.plist */,
 				F4C44B26220C45E800B679ED /* Brownie.entitlements */,
 				F43CD55B220F7A8400754EA1 /* Tree Support */,
+				F4E62E8D221302DF00347821 /* Brownie-Bridging-Header.h */,
 			);
 			path = Brownie;
 			sourceTree = "<group>";
@@ -120,9 +137,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F4C44B29220C45E800B679ED /* Build configuration list for PBXNativeTarget "Brownie" */;
 			buildPhases = (
+				E2DC1876CC1AB0B8BA195062 /* [CP] Check Pods Manifest.lock */,
 				F4C44B15220C45E700B679ED /* Sources */,
 				F4C44B16220C45E700B679ED /* Frameworks */,
 				F4C44B17220C45E700B679ED /* Resources */,
+				718C1A2710B38B371E6266EE /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -184,6 +203,53 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		718C1A2710B38B371E6266EE /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Brownie/Pods-Brownie-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Brownie/Pods-Brownie-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E2DC1876CC1AB0B8BA195062 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Brownie-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		F4C44B15220C45E700B679ED /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -194,15 +260,12 @@
 				F43CD559220F7A7F00754EA1 /* BaseNode.swift in Sources */,
 				F4C44B1F220C45E700B679ED /* ViewController.swift in Sources */,
 				F4C44B1D220C45E700B679ED /* AppDelegate.swift in Sources */,
-				F48E3D0F220F026B00C9ADB0 /* ThumbnailCache.swift in Sources */,
 				F43CD55F220F8A5A00754EA1 /* OutlineController.swift in Sources */,
 				F44C90F3220DB1A900253B79 /* JPEGInfo.swift in Sources */,
 				F4E62E312212E55200347821 /* CollectionViewItem.swift in Sources */,
 				F44C90EF220C82CE00253B79 /* PhotoCluster.swift in Sources */,
 				F43CD55D220F862100754EA1 /* MapViewController.swift in Sources */,
-				F44C90F7220DB95700253B79 /* LRUCache.swift in Sources */,
 				F44C90F5220DB25A00253B79 /* PhotoStore.swift in Sources */,
-				F44C90F9220DB98200253B79 /* LinkedList.swift in Sources */,
 				F44C90F1220C878300253B79 /* Operations.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -338,6 +401,7 @@
 		};
 		F4C44B2A220C45E800B679ED /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BAE9ACD67D1C54690AA993D5 /* Pods-Brownie.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -350,12 +414,14 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.simon-cozens.Brownie";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Brownie/Brownie-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
 		F4C44B2B220C45E800B679ED /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0F79DFA5A280A61D39BEC838 /* Pods-Brownie.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -368,6 +434,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.simon-cozens.Brownie";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Brownie/Brownie-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 			};
 			name = Release;

@@ -17,13 +17,36 @@ import MapKit
 extension Notification.Name {
     static let MorePhotosHaveArrived = NSNotification.Name("MorePhotosHaveArrived")
     static let SyncYearTree = NSNotification.Name("SyncYearTree")
+    static let ActivityOn = NSNotification.Name("ActivityOn")
+    static let ActivityOff = NSNotification.Name("ActivityOff")
 
 }
 
-class ViewController: NSSplitViewController {
+class ViewController: NSWindowController {
 //    @IBOutlet weak var photocount: NSTextField!
-    @IBOutlet weak var spinner: NSProgressIndicator!    
+    @IBOutlet weak var spinner: NSProgressIndicator!
+    override func windowWillLoad() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.animateSpinner), name: NSNotification.Name.ActivityOn, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.stopSpinner), name: NSNotification.Name.ActivityOff, object: nil)
+        spinner.isHidden = false
+    }
+    
+    @objc func animateSpinner() {
+        print("Got animate notification")
+        DispatchQueue.main.async {
+            self.spinner.isHidden = false
+            self.spinner.startAnimation(nil)
+        }
+    }
+    @objc func stopSpinner() {
+        DispatchQueue.main.async {
+            self.spinner.stopAnimation(nil)
+            self.spinner.isHidden = true
+        }
+    }
+
 }
+
 
 extension MKCoordinateRegion {
     

@@ -15,6 +15,11 @@ class DayTree {
     var members: [JPEGInfo] = []
 }
 
+enum LockType {
+    case Read
+    case Write
+}
+
 class MonthTree {
     var count: Int = 0
     var members: [JPEGInfo] = []
@@ -45,11 +50,17 @@ class PhotoStore {
     var filters: [PhotoFilter] = []
     var allItems: [JPEGInfo] = []
     var yearTree: Dictionary<Int, YearTree> = [:]
+    var pendingAdditions: [JPEGInfo] = []
     var countAtLastReload = 0
     var filtersChanged = true
     var filteredItems: [JPEGInfo] {
+        let startTime = CFAbsoluteTimeGetCurrent()
+        defer { print("Filtered items in \(CFAbsoluteTimeGetCurrent()-startTime)s") }
         pthread_rwlock_rdlock(&databaselock)
+        defer { pthread_rwlock_unlock(&databaselock) }
         var items: [JPEGInfo] = []
+        pthread_rwlock_rdlock(&filterlock)
+        defer { pthread_rwlock_unlock(&filterlock) }
         if filters.count == 0 {
             items = allItems
         } else {
@@ -60,19 +71,18 @@ class PhotoStore {
                 return true
             }
         }
-        pthread_rwlock_unlock(&databaselock)
         return items
     }
     var countFilteredItems: Int {
-//        pthread_rwlock_rdlock(&databaselock)
         let c = filteredItems.count
-//        pthread_rwlock_unlock(&databaselock)
         return c
     }
     var databaselock = pthread_rwlock_t()
     var clusterstorelock = pthread_rwlock_t()
     var treelock = pthread_rwlock_t()
     var yeartreelock = pthread_rwlock_t()
+    var pendinglock = pthread_rwlock_t()
+    var filterlock = pthread_rwlock_t()
     var quiescent = true
 
     init() {
@@ -80,15 +90,18 @@ class PhotoStore {
         pthread_rwlock_init(&clusterstorelock, nil)
         pthread_rwlock_init(&treelock, nil)
         pthread_rwlock_init(&yeartreelock, nil)
+        pthread_rwlock_init(&pendinglock, nil)
+        pthread_rwlock_init(&filterlock, nil)
     }
     
     public static var shared = PhotoStore()
 
     func addDirectory(_ url: URL,periodicUpdate:@escaping ()->Void) {
         self.quiescent = false
+        print("Sending animation notification")
+        NotificationCenter.default.post(name: Notification.Name.ActivityOn, object: nil)
         let sourcesindex = IndexPath(index: 1) // XXX
         let sources = treeController!.arrangedObjects.descendant(at: sourcesindex)?.representedObject as! BaseNode
-        print(sources.children.count)
         let thissourceindex = sourcesindex.appending(IndexPath(index: sources.children.count))
         let node = ChildNode()
         node.nodeTitle = url.lastPathComponent
@@ -96,6 +109,7 @@ class PhotoStore {
         DispatchQueue.main.async {
             pthread_rwlock_wrlock(&self.treelock)
             self.treeController!.insert(node, atArrangedObjectIndexPath: thissourceindex)
+            self.treeController!.rearrangeObjects()
             pthread_rwlock_unlock(&self.treelock)
         }
 
@@ -104,9 +118,11 @@ class PhotoStore {
         let enumerator:FileManager.DirectoryEnumerator = fileManager.enumerator(at: url, includingPropertiesForKeys: [.typeIdentifierKey])!
         let completionOperation = BlockOperation {
             print("Running final item in exifQueue")
+            self.bulkAddItems()
             periodicUpdate()
             self.quiescent = true
             NotificationCenter.default.post(name: Notification.Name.SyncYearTree, object: nil)
+             NotificationCenter.default.post(name: Notification.Name.ActivityOff, object: nil)
         }
         do {
             while let f = enumerator.nextObject() as? URL {
@@ -123,41 +139,48 @@ class PhotoStore {
         let type = try f.resourceValues(forKeys: [.typeIdentifierKey]).typeIdentifier
         if type == nil || type! != "public.jpeg" { return }
         let item = JPEGInfo(path: f, properties: nil)
-        let storer = AddToStore(item: item)
         let exif = ProcessEXIF(item: item)
+        let storer = AddToStore(item: item)
+        let finish = FinishFiling(item: item)
 
         storer.completionBlock = {
             if storer.isCancelled { return }
-            pthread_rwlock_rdlock(&(self.databaselock))
-            let lastReload = self.countAtLastReload + 1000
-            pthread_rwlock_unlock(&(self.databaselock))
-            if self.semaphoredCountItems() > lastReload {
-                print("Reloading")
-                pthread_rwlock_wrlock(&(self.databaselock))
-                self.countAtLastReload = self.allItems.count
-                pthread_rwlock_unlock(&(self.databaselock))
-                periodicUpdate()
-                NotificationCenter.default.post(name: Notification.Name.SyncYearTree, object: nil)
-                //
-            }
-            pthread_rwlock_wrlock(&(self.databaselock))
             DispatchQueue.main.async {
+                if self.semaphoredCountPendingItems() > 1000 {
+                    print("Reloading")
+                    self.bulkAddItems()
+                    pthread_rwlock_wrlock(&(self.databaselock))
+                    self.countAtLastReload = self.allItems.count
+                    pthread_rwlock_unlock(&(self.databaselock))
+                    periodicUpdate()
+                    NotificationCenter.default.post(name: Notification.Name.SyncYearTree, object: nil)
+                    //
+                }
                 sourceNode.count = sourceNode.count + 1
             }
-            completionOperation.addDependency(exif)
-            self.pendingOperations.exifQueue.addOperation(exif)
-            pthread_rwlock_unlock(&(self.databaselock))
         }
         completionOperation.addDependency(storer)
+        completionOperation.addDependency(exif)
+        completionOperation.addDependency(finish)
+
+        pendingOperations.exifQueue.addOperation(exif)
+        storer.addDependency(exif)
         pendingOperations.additionQueue.addOperation(storer)
+        finish.addDependency(storer)
+        pendingOperations.additionQueue.addOperation(finish)
+        
     }
     
     func addFilter(_ f: PhotoFilter) {
+        pthread_rwlock_wrlock(&filterlock)
         self.filters.append(f)
+        pthread_rwlock_unlock(&filterlock)
     }
     
     func removeFilter(withTag: String) {
+        pthread_rwlock_wrlock(&filterlock)
         self.filters = self.filters.filter { $0.tag != withTag }
+        pthread_rwlock_unlock(&filterlock)
     }
     
     func getYearTree() -> Dictionary<Int, YearTree> {
@@ -222,16 +245,25 @@ class PhotoStore {
         pthread_rwlock_unlock(&(self.clusterstorelock))
     }
     
-    func semaphoredCountItems() -> Int {
-        pthread_rwlock_rdlock(&(self.databaselock))
-        let c = self.allItems.count
-        pthread_rwlock_unlock(&(self.databaselock))
+    func semaphoredCountPendingItems() -> Int {
+        pthread_rwlock_rdlock(&(self.pendinglock))
+        let c = self.pendingAdditions.count
+        pthread_rwlock_unlock(&(self.pendinglock))
         return c
     }
 
     func semaphoredAddItem(_ item: JPEGInfo) {
+        pthread_rwlock_wrlock(&(self.pendinglock))
+        self.pendingAdditions.append(item)
+        pthread_rwlock_unlock(&(self.pendinglock))
+    }
+
+    func bulkAddItems() {
         pthread_rwlock_wrlock(&(self.databaselock))
-        self.allItems.append(item)
+        pthread_rwlock_wrlock(&(self.pendinglock))
+        self.allItems.append(contentsOf: self.pendingAdditions)
+        self.pendingAdditions = []
+        pthread_rwlock_unlock(&(self.pendinglock))
         pthread_rwlock_unlock(&(self.databaselock))
     }
 
@@ -240,7 +272,6 @@ class PhotoStore {
         pthread_rwlock_wrlock(&(self.clusterstorelock))
         clusterPrecision = mapscale
         clusterStore.removeAll()
-        pthread_rwlock_rdlock(&(self.databaselock))
         let divand = clusterPrecision / 2.0
         print("Rounding to \(divand)")
 
@@ -249,7 +280,6 @@ class PhotoStore {
         }
         let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
         print("Rebuilt \(clusterStore.count) annots from \(filteredItems.count) in \(timeElapsed)s.")
-        pthread_rwlock_unlock(&(self.databaselock))
         pthread_rwlock_unlock(&(self.clusterstorelock))
     }
     
@@ -262,5 +292,6 @@ class PhotoStore {
                 
             })
     }
+
 }
 

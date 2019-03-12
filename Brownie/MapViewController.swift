@@ -13,7 +13,7 @@ class MapViewController : NSViewController {
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var collectionView: NSCollectionView!
     override func viewDidLoad() {
-        NotificationCenter.default.addObserver(self, selector: #selector(rebuildAnnotations), name: NSNotification.Name.MorePhotosHaveArrived, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(morePhotos), name: NSNotification.Name.MorePhotosHaveArrived, object: nil)
     }
     
     var visibleAnnotations : [PhotoCluster] {
@@ -34,16 +34,24 @@ class MapViewController : NSViewController {
     }
     
     var curMapScale = Double(1.0)
+    @objc func morePhotos() {
+        print("More photos have arrived -> rebuilding")
+        rebuildAnnotations()
+    }
     @objc func rebuildAnnotations () {
         let photoStore = PhotoStore.shared
         print("Doing annotations")
-        pthread_rwlock_rdlock(&(photoStore.clusterstorelock))
-        let annotationset = Set<PhotoCluster>(photoStore.clusterStore.values)
-        pthread_rwlock_unlock(&(photoStore.clusterstorelock))
-        let currentAnnotations = Set(mapView.annotations as! [PhotoCluster])
-        let toRemove = Array(currentAnnotations.subtracting(annotationset))
-        let toAdd = Array(annotationset.subtracting(currentAnnotations))
         DispatchQueue.main.async {
+            PhotoStore.shared.reroundCoordinates(self.curMapScale)
+            pthread_rwlock_rdlock(&(photoStore.clusterstorelock))
+            let annotationset = Set<PhotoCluster>(photoStore.clusterStore.values)
+            pthread_rwlock_unlock(&(photoStore.clusterstorelock))
+            let currentAnnotations = Set(self.mapView.annotations as! [PhotoCluster])
+            //        print("Current annotations: \(currentAnnotations.count)")
+            let toRemove = Array(currentAnnotations.subtracting(annotationset))
+            //        print("Removing: \(toRemove.count)")
+            let toAdd = Array(annotationset.subtracting(currentAnnotations))
+            //        print("Adding: \(toAdd.count)")
             self.mapView.removeAnnotations(toRemove)
             self.mapView.addAnnotations(toAdd)
             self.collectionView.reloadData()
@@ -62,11 +70,12 @@ extension MapViewController :MKMapViewDelegate {
                     self.mapView.visibleMapRect.contains(MKMapPoint(photo.location!))
                 }
                 PhotoStore.shared.addFilter(mapFilter)
-                PhotoStore.shared.rebuildYearTree()
+//                PhotoStore.shared.rebuildYearTree()
                 if self.mapView.zoomLevel != self.curMapScale {
                     self.curMapScale = self.mapView.zoomLevel
-                    PhotoStore.shared.reroundCoordinates(self.curMapScale)
                     DispatchQueue.global(qos: .default).async {
+                        print("Rebuilding annotations because map moved")
+                        PhotoStore.shared.reroundCoordinates(self.curMapScale)
                         self.rebuildAnnotations()
                     }
                 }

@@ -684,28 +684,47 @@
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
             <objects>
-                <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
+                <windowController id="B8D-0N-5wS" customClass="ViewController" customModule="Brownie" customModuleProvider="target" sceneMemberID="viewController">
                     <window key="window" title="Brownie" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="196" y="240" width="480" height="270"/>
+                        <rect key="contentRect" x="196" y="240" width="480" height="345"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+                        <toolbar key="toolbar" implicitIdentifier="9959063F-B15F-4BE9-B44B-54BB0F230F0F" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="dOS-f3-xbv">
+                            <allowedToolbarItems>
+                                <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="xno-Fs-kXw"/>
+                                <toolbarItem implicitItemIdentifier="FD9A40BC-7FFD-4DC7-A52C-0C1AB32B7B29" label="" paletteLabel="" tag="-1" sizingBehavior="auto" id="FMN-Ol-h65">
+                                    <nil key="toolTip"/>
+                                    <progressIndicator key="view" wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" id="scR-JC-eYa">
+                                        <rect key="frame" x="0.0" y="14" width="16" height="16"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    </progressIndicator>
+                                </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="Lwf-yt-lFo"/>
+                            </allowedToolbarItems>
+                            <defaultToolbarItems>
+                                <toolbarItem reference="xno-Fs-kXw"/>
+                                <toolbarItem reference="FMN-Ol-h65"/>
+                                <toolbarItem reference="Lwf-yt-lFo"/>
+                            </defaultToolbarItems>
+                        </toolbar>
                         <connections>
                             <outlet property="delegate" destination="B8D-0N-5wS" id="98r-iN-zZc"/>
                         </connections>
                     </window>
                     <connections>
+                        <outlet property="spinner" destination="scR-JC-eYa" id="KKQ-aP-9AD"/>
                         <segue destination="5PY-gn-tng" kind="relationship" relationship="window.shadowedContentViewController" id="bBn-sp-egJ"/>
                     </connections>
                 </windowController>
                 <customObject id="Oky-zY-oP4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="250"/>
+            <point key="canvasLocation" x="75" y="287.5"/>
         </scene>
-        <!--View Controller-->
+        <!--Split View Controller-->
         <scene sceneID="FTS-CL-VTa">
             <objects>
-                <splitViewController id="5PY-gn-tng" customClass="ViewController" customModule="Brownie" customModuleProvider="target" sceneMemberID="viewController">
+                <splitViewController id="5PY-gn-tng" sceneMemberID="viewController">
                     <splitViewItems>
                         <splitViewItem id="ku4-l3-TPV"/>
                         <splitViewItem id="bjR-Ua-76q"/>
@@ -816,7 +835,7 @@
                     </connections>
                 </viewController>
                 <customObject id="nF3-CW-Yq0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-                <treeController objectClassName="BaseNode" childrenKeyPath="children" leafKeyPath="isLeaf" avoidsEmptySelection="NO" id="3BG-ZZ-Ro5">
+                <treeController objectClassName="BaseNode" childrenKeyPath="children" leafKeyPath="isLeaf" avoidsEmptySelection="NO" selectsInsertedObjects="NO" id="3BG-ZZ-Ro5">
                     <connections>
                         <binding destination="yTP-Bt-nAp" name="contentArray" keyPath="contents" id="cUW-he-Yrm"/>
                     </connections>
@@ -827,13 +846,13 @@
         <!--Tab View Controller-->
         <scene sceneID="gKe-Sf-T7J">
             <objects>
-                <tabViewController selectedTabViewItemIndex="1" id="IQm-C1-6Bp" sceneMemberID="viewController">
+                <tabViewController selectedTabViewItemIndex="1" id="IQm-C1-6Bp" customClass="TabViewController" customModule="Brownie" customModuleProvider="target" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem label="Table" identifier="" id="BoB-Ga-aI0"/>
                         <tabViewItem label="Map" id="J27-Bc-Ais"/>
                     </tabViewItems>
                     <tabView key="tabView" type="noTabsNoBorder" id="zPW-8u-Eo7">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                        <rect key="frame" x="0.0" y="0.0" width="458" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <font key="font" metaFont="message"/>
                         <connections>
@@ -848,7 +867,7 @@
                 </tabViewController>
                 <customObject id="laR-92-eod" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="654" y="1537"/>
+            <point key="canvasLocation" x="658" y="1537"/>
         </scene>
         <!--Table View Controller-->
         <scene sceneID="iQL-O8-nUq">

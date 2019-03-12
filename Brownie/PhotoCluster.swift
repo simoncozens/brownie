@@ -83,7 +83,6 @@ class CustomAnnotationView: MKAnnotationView {
         self.frame = annotationFrame
         self.label.font = NSFont.systemFont(ofSize: 24, weight: .semibold)
         self.label.textColor = .white
-        print("Trying...")
         let transformer = SDImageResizingTransformer(size: CGSize(width: 200, height: 200), scaleMode: .aspectFit)
 
         SDWebImageManager.shared.loadImage(with: item.path, options: [], context: [.imageTransformer: transformer], progress: nil, completed: {

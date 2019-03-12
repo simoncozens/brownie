@@ -42,6 +42,7 @@ class OutlineController: NSViewController, NSOutlineViewDelegate, NSOutlineViewD
         DispatchQueue.global(qos: .default).async {
             self.photoStore.addDirectory(picsURL, periodicUpdate: {() in
                 DispatchQueue.main.async { self.myOutlineView?.reloadData() }
+                print("Periodic update -> more photos")
                 NotificationCenter.default.post(name: NSNotification.Name.MorePhotosHaveArrived, object: nil)
             })
         }
@@ -76,8 +77,12 @@ class OutlineController: NSViewController, NSOutlineViewDelegate, NSOutlineViewD
 //                    self.treeController.insert(node, atArrangedObjectIndexPath: yearindex.appending(IndexPath(index: mcount)))
 //                    mcount = mcount + 1
 //                }
-
             }
+//            self.treeController.rearrangeObjects()
+
+            self.myOutlineView.expandItem(self.treeController!.arrangedObjects.descendant(at: IndexPath(index: 0)))
+            self.myOutlineView.expandItem(self.treeController!.arrangedObjects.descendant(at: IndexPath(index: 1)))
+            self.myOutlineView.needsDisplay = true
             self.myOutlineView.isHidden = false
         }
     }
@@ -97,6 +102,7 @@ class OutlineController: NSViewController, NSOutlineViewDelegate, NSOutlineViewD
         node.nodeTitle = treeAddition.nodeName ?? ""
         // the user is adding a child node, tell the controller directly
         self.treeController.insert(node, atArrangedObjectIndexPath: indexPath)
+
     }
     
     //MARK: - NSOutlineViewDelegate
@@ -108,6 +114,25 @@ class OutlineController: NSViewController, NSOutlineViewDelegate, NSOutlineViewD
         // don't allow special group nodes (Places and Bookmarks) to be selected
         let node = (item as! NSTreeNode).representedObject as! BaseNode
         return !node.isSpecialGroup && !node.isSeparator
+    }
+    
+    func outlineViewSelectionDidChange(_ notification: Notification) {
+        guard let selection = myOutlineView.item(atRow: myOutlineView.selectedRow) as? NSTreeNode else { return }
+        let node = (selection as! NSTreeNode).representedObject as! BaseNode
+        print("Selected: \(node.nodeTitle)")
+        let datesindex = IndexPath(index: 0) // XXX
+        let datesnode = treeController!.arrangedObjects.descendant(at: datesindex)?.representedObject as! BaseNode
+        PhotoStore.shared.removeFilter(withTag: "Year")
+        if (node.isDescendantOfNodes([datesnode])) {
+            let f = PhotoFilter(tag: "Year") {
+                if $0.isodate == nil { return false }
+                let year = Calendar.current.component(.year, from: $0.isodate!)
+                return String(year) == node.nodeTitle
+            }
+            PhotoStore.shared.addFilter(f)
+        }
+        // Use this to rebuild map annotations / filter table
+        NotificationCenter.default.post(name: NSNotification.Name.MorePhotosHaveArrived, object: nil)
     }
     
     // -------------------------------------------------------------------------------

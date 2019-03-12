@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2D7E7F9E7C7FE433EE045662 /* Pods_Brownie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 51348AF558D333AF213DA7EB /* Pods_Brownie.framework */; };
+		F43AA90C2224A0C80091F387 /* TabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43AA90B2224A0C80091F387 /* TabViewController.swift */; };
 		F43CD559220F7A7F00754EA1 /* BaseNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43CD557220F7A7F00754EA1 /* BaseNode.swift */; };
 		F43CD55A220F7A8000754EA1 /* ChildNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43CD558220F7A7F00754EA1 /* ChildNode.swift */; };
 		F43CD55D220F862100754EA1 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43CD55C220F862100754EA1 /* MapViewController.swift */; };
@@ -29,6 +30,7 @@
 		0F79DFA5A280A61D39BEC838 /* Pods-Brownie.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Brownie.release.xcconfig"; path = "Pods/Target Support Files/Pods-Brownie/Pods-Brownie.release.xcconfig"; sourceTree = "<group>"; };
 		51348AF558D333AF213DA7EB /* Pods_Brownie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Brownie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAE9ACD67D1C54690AA993D5 /* Pods-Brownie.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Brownie.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Brownie/Pods-Brownie.debug.xcconfig"; sourceTree = "<group>"; };
+		F43AA90B2224A0C80091F387 /* TabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewController.swift; sourceTree = "<group>"; };
 		F43CD557220F7A7F00754EA1 /* BaseNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseNode.swift; sourceTree = "<group>"; };
 		F43CD558220F7A7F00754EA1 /* ChildNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChildNode.swift; sourceTree = "<group>"; };
 		F43CD55C220F862100754EA1 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -121,6 +123,7 @@
 				F44C90F0220C878300253B79 /* Operations.swift */,
 				F4C44B20220C45E800B679ED /* Assets.xcassets */,
 				F4C44B22220C45E800B679ED /* Main.storyboard */,
+				F43AA90B2224A0C80091F387 /* TabViewController.swift */,
 				F4E62E322212E65E00347821 /* CollectionViewItem.xib */,
 				F4C44B25220C45E800B679ED /* Info.plist */,
 				F4C44B26220C45E800B679ED /* Brownie.entitlements */,
@@ -259,6 +262,7 @@
 				F43CD55A220F7A8000754EA1 /* ChildNode.swift in Sources */,
 				F43CD559220F7A7F00754EA1 /* BaseNode.swift in Sources */,
 				F4C44B1F220C45E700B679ED /* ViewController.swift in Sources */,
+				F43AA90C2224A0C80091F387 /* TabViewController.swift in Sources */,
 				F4C44B1D220C45E700B679ED /* AppDelegate.swift in Sources */,
 				F43CD55F220F8A5A00754EA1 /* OutlineController.swift in Sources */,
 				F44C90F3220DB1A900253B79 /* JPEGInfo.swift in Sources */,

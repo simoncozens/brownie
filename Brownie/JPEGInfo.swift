@@ -45,7 +45,6 @@ class JPEGInfo : Hashable {
         
         if (latref as! String) == "S" { lat = -lat }
         if (longref as! String) == "W" { long = -long }
-        
         _location = CLLocationCoordinate2D(latitude: lat, longitude: long)
         return _location
     }

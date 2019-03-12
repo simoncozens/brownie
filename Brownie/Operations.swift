@@ -14,39 +14,15 @@ class PendingOperations {
     lazy var storeAdditionsInProgress: [JPEGInfo: Operation] = [:]
     lazy var additionQueue: OperationQueue = {
         var queue = OperationQueue()
-//        queue.maxConcurrentOperationCount = 4
+//        queue.maxConcurrentOperationCount = 1
         queue.name = "Addition queue"
         return queue
     }()
     lazy var exifQueue: OperationQueue = {
-        return additionQueue
-//        var queue = OperationQueue()
-//        queue.maxConcurrentOperationCount = 4
-//        queue.name = "EXIF queue"
-//        return queue
+        var queue = OperationQueue()
+        queue.name = "EXIF queue"
+        return queue
     }()
-}
-
-class ProcessEXIF: Operation {
-    var item: JPEGInfo
-    init(item: JPEGInfo) {
-        self.item = item
-    }
-    override func main() {
-        if isCancelled { return }
-//        print("Processing EXIF for \(item.path)")
-//        let startTime = CFAbsoluteTimeGetCurrent()
-
-        if let imageSource = CGImageSourceCreateWithURL(item.path as CFURL, nil) {
-            let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as Dictionary?
-            item.properties = imageProperties
-            PhotoStore.shared.fileInYearTree(item)
-        }
-        PhotoStore.shared.processLocation(item)
-//        let elapsed = CFAbsoluteTimeGetCurrent() - startTime
-//        print("Processed EXIF for \(item.path) in \(elapsed)s")
-    }
-
 }
 
 class AddToStore: Operation {
@@ -59,5 +35,37 @@ class AddToStore: Operation {
     override func main() {
         if isCancelled { return }
         PhotoStore.shared.semaphoredAddItem(item)
+    }
+}
+
+class ProcessEXIF: Operation {
+    var item: JPEGInfo
+    
+    init(item: JPEGInfo) {
+        self.item = item
+    }
+    override func main() {
+        if isCancelled { return }
+        if let imageSource = CGImageSourceCreateWithURL(item.path as CFURL, nil) {
+            let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as Dictionary?
+            item.properties = imageProperties
+            // Parse date
+            _ = item.isodate
+            _ = item.location
+        }
+    }
+}
+
+class FinishFiling: Operation {
+    var item: JPEGInfo
+    
+    init(item: JPEGInfo) {
+        self.item = item
+    }
+
+    override func main() {
+        if isCancelled { return }
+        PhotoStore.shared.fileInYearTree(item)
+        PhotoStore.shared.processLocation(item)
     }
 }

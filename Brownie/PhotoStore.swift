@@ -53,25 +53,12 @@ class PhotoStore {
     var pendingAdditions: [JPEGInfo] = []
     var countAtLastReload = 0
     var filtersChanged = true
+    var _filteredItems: [JPEGInfo] = []
     var filteredItems: [JPEGInfo] {
-        let startTime = CFAbsoluteTimeGetCurrent()
-        defer { print("Filtered items in \(CFAbsoluteTimeGetCurrent()-startTime)s") }
-        pthread_rwlock_rdlock(&databaselock)
-        defer { pthread_rwlock_unlock(&databaselock) }
-        var items: [JPEGInfo] = []
-        pthread_rwlock_rdlock(&filterlock)
-        defer { pthread_rwlock_unlock(&filterlock) }
-        if filters.count == 0 {
-            items = allItems
-        } else {
-            items = allItems.lazy.filter {
-                for f in self.filters {
-                    if !f.filter($0) { return false }
-                }
-                return true
-            }
+        if filtersChanged {
+            rebuildFilteredItems()
         }
-        return items
+        return _filteredItems
     }
     var countFilteredItems: Int {
         let c = filteredItems.count
@@ -173,12 +160,14 @@ class PhotoStore {
     
     func addFilter(_ f: PhotoFilter) {
         pthread_rwlock_wrlock(&filterlock)
+        self.filtersChanged = true
         self.filters.append(f)
         pthread_rwlock_unlock(&filterlock)
     }
     
     func removeFilter(withTag: String) {
         pthread_rwlock_wrlock(&filterlock)
+        self.filtersChanged = true
         self.filters = self.filters.filter { $0.tag != withTag }
         pthread_rwlock_unlock(&filterlock)
     }
@@ -262,6 +251,7 @@ class PhotoStore {
         pthread_rwlock_wrlock(&(self.databaselock))
         pthread_rwlock_wrlock(&(self.pendinglock))
         self.allItems.append(contentsOf: self.pendingAdditions)
+        self.filtersChanged = true
         self.pendingAdditions = []
         pthread_rwlock_unlock(&(self.pendinglock))
         pthread_rwlock_unlock(&(self.databaselock))
@@ -279,7 +269,7 @@ class PhotoStore {
             self.processLocation(i)
         }
         let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
-        print("Rebuilt \(clusterStore.count) annots from \(filteredItems.count) in \(timeElapsed)s.")
+//        print("Rebuilt \(clusterStore.count) annots from \(self.countFilteredItems()) in \(timeElapsed)s.")
         pthread_rwlock_unlock(&(self.clusterstorelock))
     }
     
@@ -292,6 +282,27 @@ class PhotoStore {
                 
             })
     }
-
+    
+    func rebuildFilteredItems() {
+        let startTime = CFAbsoluteTimeGetCurrent()
+        defer { print("Filtered items in \(CFAbsoluteTimeGetCurrent()-startTime)s") }
+        pthread_rwlock_rdlock(&databaselock)
+        defer { pthread_rwlock_unlock(&databaselock) }
+        var items: [JPEGInfo] = []
+        pthread_rwlock_rdlock(&filterlock)
+        defer { pthread_rwlock_unlock(&filterlock) }
+        if filters.count == 0 {
+            items = allItems
+        } else {
+            items = allItems.lazy.filter {
+                for f in self.filters {
+                    if !f.filter($0) { return false }
+                }
+                return true
+            }
+        }
+        filtersChanged = false
+        _filteredItems = items
+    }
 }
 

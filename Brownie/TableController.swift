@@ -46,10 +46,8 @@ extension TableController: NSTableViewDelegate {
         dateFormatter.timeStyle = .long
         //        let rect = tableView.visibleRect
         //        let visiblerows = tableView.rows(in: rect)
-        pthread_rwlock_rdlock(&PhotoStore.shared.databaselock)
         if row > PhotoStore.shared.countFilteredItems { return nil }
         let item = PhotoStore.shared.filteredItems[row]
-        pthread_rwlock_unlock(&PhotoStore.shared.databaselock)
         if tableColumn == tableView.tableColumns[0] {
             cellIdentifier = CellIdentifiers.ThumbnailCell
         } else if tableColumn == tableView.tableColumns[1] {

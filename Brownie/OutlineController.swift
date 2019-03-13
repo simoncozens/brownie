@@ -27,7 +27,6 @@ class OutlineController: NSViewController, NSOutlineViewDelegate, NSOutlineViewD
     @IBOutlet weak var myOutlineView: NSOutlineView!
     @IBOutlet var treeController: NSTreeController!
     @objc dynamic var contents: [AnyObject] = []
-    let pendingOperations = PendingOperations()
     let photoStore = PhotoStore.shared
 
     override func viewDidLoad() {
@@ -38,15 +37,24 @@ class OutlineController: NSViewController, NSOutlineViewDelegate, NSOutlineViewD
         let picsURL = fileManager.urls(for: .picturesDirectory, in: .userDomainMask)[0]//.appendingPathComponent("Brownie/")
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.syncYearTree(_:)), name: NSNotification.Name.SyncYearTree, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.periodicUpdate(_:)), name: NSNotification.Name.MorePhotosHaveArrived, object: nil)
 
         DispatchQueue.global(qos: .default).async {
             self.photoStore.addDirectory(picsURL, periodicUpdate: {() in
-                DispatchQueue.main.async { self.myOutlineView?.reloadData() }
-                print("Periodic update -> more photos")
-                NotificationCenter.default.post(name: NSNotification.Name.MorePhotosHaveArrived, object: nil)
+                
             })
         }
         
+    }
+    
+    @objc func periodicUpdate(_ n: NSNotification) {
+        print("Reloading outline view")
+        DispatchQueue.main.async {
+            self.myOutlineView.expandItem(self.treeController!.arrangedObjects.descendant(at: IndexPath(index: 1)))
+            self.myOutlineView.needsDisplay = true
+            self.myOutlineView?.reloadData()
+            // XXX
+        }
     }
 
     @objc func syncYearTree(_ n: NSNotification) {
@@ -61,10 +69,8 @@ class OutlineController: NSViewController, NSOutlineViewDelegate, NSOutlineViewD
                 let last = IndexPath(index: datesnode.children.count)
                 let node = ChildNode()
                 node.nodeTitle = String(year)
-                pthread_rwlock_rdlock(&(PhotoStore.shared.yeartreelock))
                 node.count = yeartree[year]!.count
                 let months = yeartree[year]!.months
-                pthread_rwlock_unlock(&(PhotoStore.shared.yeartreelock))
                 let yearindex = datesindex.appending(last)
                 self.treeController.insert(node, atArrangedObjectIndexPath: yearindex)
 //                var mcount = 0

@@ -46,7 +46,6 @@ class PhotoStore {
     var treeController: NSTreeController? = nil
     var clusterStore: Dictionary<CLLocationCoordinate2D,PhotoCluster> = [:]
     var clusterPrecision :Double = -1.0
-    var pendingOperations = PendingOperations()
     var filters: [PhotoFilter] = []
     var allItems: [JPEGInfo] = []
     var yearTree: Dictionary<Int, YearTree> = [:]
@@ -54,36 +53,43 @@ class PhotoStore {
     var countAtLastReload = 0
     var filtersChanged = true
     var _filteredItems: [JPEGInfo] = []
+    var substores: [PhotoStore] = []
+    var roundRobin = 0
+    var queue: DispatchQueue?
     var filteredItems: [JPEGInfo] {
-        if filtersChanged {
-            rebuildFilteredItems()
-        }
+        checkAndRebuildFilteredItems()
         return _filteredItems
     }
     var countFilteredItems: Int {
         let c = filteredItems.count
         return c
     }
-    var databaselock = pthread_rwlock_t()
     var clusterstorelock = pthread_rwlock_t()
-    var treelock = pthread_rwlock_t()
-    var yeartreelock = pthread_rwlock_t()
-    var pendinglock = pthread_rwlock_t()
-    var filterlock = pthread_rwlock_t()
     var quiescent = true
 
     init() {
-        pthread_rwlock_init(&databaselock, nil)
         pthread_rwlock_init(&clusterstorelock, nil)
-        pthread_rwlock_init(&treelock, nil)
-        pthread_rwlock_init(&yeartreelock, nil)
-        pthread_rwlock_init(&pendinglock, nil)
-        pthread_rwlock_init(&filterlock, nil)
+    }
+    
+    func nextSubstore() -> PhotoStore {
+        if substores.count == 0 {
+            for var i in 1...10 {
+                let store = PhotoStore()
+                store.queue = DispatchQueue(label: "Substore \(i)")
+                substores.append(store)
+            }
+        }
+        let q = substores[roundRobin]
+        roundRobin = (roundRobin + 1) % substores.count
+        return q
     }
     
     public static var shared = PhotoStore()
 
     func addDirectory(_ url: URL,periodicUpdate:@escaping ()->Void) {
+        if PhotoStore.shared.queue == nil {
+            PhotoStore.shared.queue = DispatchQueue(label: "Main Database")
+        }
         self.quiescent = false
         print("Sending animation notification")
         NotificationCenter.default.post(name: Notification.Name.ActivityOn, object: nil)
@@ -94,98 +100,103 @@ class PhotoStore {
         node.nodeTitle = url.lastPathComponent
         node.count = 0
         DispatchQueue.main.async {
-            pthread_rwlock_wrlock(&self.treelock)
             self.treeController!.insert(node, atArrangedObjectIndexPath: thissourceindex)
             self.treeController!.rearrangeObjects()
-            pthread_rwlock_unlock(&self.treelock)
         }
 
         let fileManager = FileManager.default
         countAtLastReload = allItems.count
         let enumerator:FileManager.DirectoryEnumerator = fileManager.enumerator(at: url, includingPropertiesForKeys: [.typeIdentifierKey])!
-        let completionOperation = BlockOperation {
-            print("Running final item in exifQueue")
-            self.bulkAddItems()
-            periodicUpdate()
-            self.quiescent = true
-            NotificationCenter.default.post(name: Notification.Name.SyncYearTree, object: nil)
-             NotificationCenter.default.post(name: Notification.Name.ActivityOff, object: nil)
-        }
+        // XX Sort out notification here
+//        let completionOperation = BlockOperation {
+//            print("Running final item in exifQueue")
+//            self.syncWithShared()
+//            periodicUpdate()
+//            self.quiescent = true
+//            NotificationCenter.default.post(name: Notification.Name.SyncYearTree, object: nil)
+//             NotificationCenter.default.post(name: Notification.Name.ActivityOff, object: nil)
+//        }
         do {
             while let f = enumerator.nextObject() as? URL {
-//                enumerator.skipDescendants()
-                try self.addFileToList(file: f, periodicUpdate: periodicUpdate, sourceNode: node, completionOperation: completionOperation)
+                var store = nextSubstore()
+                store.queue!.async {
+                    store.addFileToList(file: f, sourceNode: node)
+                }
             }
         } catch {
             print(error.localizedDescription)
         }
-        pendingOperations.additionQueue.addOperation(completionOperation)
     }
     
-    func addFileToList(file f: URL, periodicUpdate: @escaping ()->Void, sourceNode: BaseNode, completionOperation: BlockOperation) throws {
-        let type = try f.resourceValues(forKeys: [.typeIdentifierKey]).typeIdentifier
-        if type == nil || type! != "public.jpeg" { return }
-        let item = JPEGInfo(path: f, properties: nil)
-        let exif = ProcessEXIF(item: item)
-        let storer = AddToStore(item: item)
-        let finish = FinishFiling(item: item)
-
-        storer.completionBlock = {
-            if storer.isCancelled { return }
-            DispatchQueue.main.async {
-                if self.semaphoredCountPendingItems() > 1000 {
-                    print("Reloading")
-                    self.bulkAddItems()
-                    pthread_rwlock_wrlock(&(self.databaselock))
-                    self.countAtLastReload = self.allItems.count
-                    pthread_rwlock_unlock(&(self.databaselock))
-                    periodicUpdate()
-                    NotificationCenter.default.post(name: Notification.Name.SyncYearTree, object: nil)
-                    //
-                }
-                sourceNode.count = sourceNode.count + 1
-            }
+    func addFileToList(file f: URL, sourceNode: BaseNode) {
+        var type: String?
+        do {
+            type = try f.resourceValues(forKeys: [.typeIdentifierKey]).typeIdentifier
+        } catch {
+            return
         }
-        completionOperation.addDependency(storer)
-        completionOperation.addDependency(exif)
-        completionOperation.addDependency(finish)
-
-        pendingOperations.exifQueue.addOperation(exif)
-        storer.addDependency(exif)
-        pendingOperations.additionQueue.addOperation(storer)
-        finish.addDependency(storer)
-        pendingOperations.additionQueue.addOperation(finish)
+        if type == nil || type! != "public.jpeg" { return }
         
+        
+        let item = JPEGInfo(path: f, properties: nil)
+        
+        self.allItems.append(item)
+//        print("I am \(self.queue!.label) and I now have \(allItems.count) items")
+        
+        // Process the EXIF
+        if let imageSource = CGImageSourceCreateWithURL(item.path as CFURL, nil) {
+            let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as Dictionary?
+            item.properties = imageProperties
+            // Parse date
+            _ = item.isodate
+            _ = item.location
+        }
+        
+        // Finish off
+        fileInYearTree(item)
+        processLocation(item)
+
+        if allItems.count > 300 {
+            syncWithShared(sourceNode)
+        }
+    }
+    
+    func syncWithShared(_ sourceNode: BaseNode) {
+        var myItems = allItems
+        allItems = []
+        print("Calling sync from queue \(queue!.label)")
+        PhotoStore.shared.queue!.async(flags: .barrier) {
+            print("Entering barrier section for queue \(self.queue!.label)")
+            PhotoStore.shared.allItems.append(contentsOf: myItems)
+            PhotoStore.shared.filtersChanged = true
+            // Add contents of year tree!
+            sourceNode.count = sourceNode.count + myItems.count
+            // Run periodic updates
+            NotificationCenter.default.post(name: NSNotification.Name.MorePhotosHaveArrived, object: nil)
+            print("Leaving barrier section")
+        }
     }
     
     func addFilter(_ f: PhotoFilter) {
-        pthread_rwlock_wrlock(&filterlock)
         self.filtersChanged = true
         self.filters.append(f)
-        pthread_rwlock_unlock(&filterlock)
     }
     
     func removeFilter(withTag: String) {
-        pthread_rwlock_wrlock(&filterlock)
         self.filtersChanged = true
         self.filters = self.filters.filter { $0.tag != withTag }
-        pthread_rwlock_unlock(&filterlock)
     }
     
     func getYearTree() -> Dictionary<Int, YearTree> {
-        pthread_rwlock_rdlock(&(self.yeartreelock))
         let yt = self.yearTree
-        pthread_rwlock_unlock(&(self.yeartreelock))
         return yt
     }
     
-    func rebuildYearTree() {
-        pthread_rwlock_wrlock(&(self.yeartreelock))
+    func rebuildYearTree() { // Should be barriered
         self.yearTree = [:]
         for f in filteredItems {
             self.fileInYearTree(f)
         }
-        pthread_rwlock_unlock(&(self.yeartreelock))
         NotificationCenter.default.post(name: Notification.Name.SyncYearTree, object: nil)
     }
     
@@ -194,29 +205,17 @@ class PhotoStore {
         let year = Calendar.current.component(.year, from: date)
         let month = Calendar.current.component(.month, from: date)
 
-        pthread_rwlock_rdlock(&(self.yeartreelock))
         if yearTree[year] == nil {
-            pthread_rwlock_unlock(&(self.yeartreelock))
-            pthread_rwlock_wrlock(&(self.yeartreelock))
             yearTree[year] = YearTree()
         }
-        pthread_rwlock_unlock(&(self.yeartreelock))
-        pthread_rwlock_rdlock(&(self.yeartreelock))
         let c = yearTree[year]!.count
-        pthread_rwlock_unlock(&(self.yeartreelock))
-        pthread_rwlock_wrlock(&(self.yeartreelock))
         yearTree[year]!.count = c + 1
         yearTree[year]!.members.append(item)
         if (yearTree[year]!.months[month] == nil) {
             yearTree[year]!.months[month] = MonthTree()
         }
-        pthread_rwlock_unlock(&(self.yeartreelock))
-        pthread_rwlock_rdlock(&(self.yeartreelock))
         let cm = yearTree[year]!.months[month]!.count
-        pthread_rwlock_unlock(&(self.yeartreelock))
-        pthread_rwlock_wrlock(&(self.yeartreelock))
         yearTree[year]!.months[month]!.count = cm + 1
-        pthread_rwlock_unlock(&(self.yeartreelock))
     }
     
     func processLocation(_ item: JPEGInfo) {
@@ -234,29 +233,6 @@ class PhotoStore {
         pthread_rwlock_unlock(&(self.clusterstorelock))
     }
     
-    func semaphoredCountPendingItems() -> Int {
-        pthread_rwlock_rdlock(&(self.pendinglock))
-        let c = self.pendingAdditions.count
-        pthread_rwlock_unlock(&(self.pendinglock))
-        return c
-    }
-
-    func semaphoredAddItem(_ item: JPEGInfo) {
-        pthread_rwlock_wrlock(&(self.pendinglock))
-        self.pendingAdditions.append(item)
-        pthread_rwlock_unlock(&(self.pendinglock))
-    }
-
-    func bulkAddItems() {
-        pthread_rwlock_wrlock(&(self.databaselock))
-        pthread_rwlock_wrlock(&(self.pendinglock))
-        self.allItems.append(contentsOf: self.pendingAdditions)
-        self.filtersChanged = true
-        self.pendingAdditions = []
-        pthread_rwlock_unlock(&(self.pendinglock))
-        pthread_rwlock_unlock(&(self.databaselock))
-    }
-
     func reroundCoordinates(_ mapscale: Double) {
         let startTime = CFAbsoluteTimeGetCurrent()
         pthread_rwlock_wrlock(&(self.clusterstorelock))
@@ -283,26 +259,26 @@ class PhotoStore {
             })
     }
     
-    func rebuildFilteredItems() {
-        let startTime = CFAbsoluteTimeGetCurrent()
-        defer { print("Filtered items in \(CFAbsoluteTimeGetCurrent()-startTime)s") }
-        pthread_rwlock_rdlock(&databaselock)
-        defer { pthread_rwlock_unlock(&databaselock) }
-        var items: [JPEGInfo] = []
-        pthread_rwlock_rdlock(&filterlock)
-        defer { pthread_rwlock_unlock(&filterlock) }
-        if filters.count == 0 {
-            items = allItems
-        } else {
-            items = allItems.lazy.filter {
-                for f in self.filters {
-                    if !f.filter($0) { return false }
+    func checkAndRebuildFilteredItems() {
+        queue!.sync(flags: .barrier) {
+            if filtersChanged {
+                let startTime = CFAbsoluteTimeGetCurrent()
+                defer { print("Filtered items in \(CFAbsoluteTimeGetCurrent()-startTime)s") }
+                var items: [JPEGInfo] = []
+                if filters.count == 0 {
+                    items = allItems
+                } else {
+                    items = allItems.lazy.filter {
+                        for f in self.filters {
+                            if !f.filter($0) { return false }
+                        }
+                        return true
+                    }
                 }
-                return true
+                filtersChanged = false
+                _filteredItems = items
             }
         }
-        filtersChanged = false
-        _filteredItems = items
     }
 }
 

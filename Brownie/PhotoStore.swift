@@ -10,7 +10,7 @@ import Foundation
 import MapKit
 import SDWebImage
 
-class DayTree {
+struct DayTree {
     var count: Int = 0
     var members: [JPEGInfo] = []
 }
@@ -20,13 +20,13 @@ enum LockType {
     case Write
 }
 
-class MonthTree {
+struct MonthTree {
     var count: Int = 0
     var members: [JPEGInfo] = []
     var days: Dictionary<Int,DayTree> = [:]
 }
 
-class YearTree {
+struct YearTree {
     var count: Int = 0
     var members: [JPEGInfo] = []
     var months: Dictionary<Int,MonthTree> = [:]
@@ -73,7 +73,7 @@ class PhotoStore {
     
     func nextSubstore() -> PhotoStore {
         if substores.count == 0 {
-            for var i in 1...10 {
+            for var i in 1...8 {
                 let store = PhotoStore()
                 store.queue = DispatchQueue(label: "Substore \(i)")
                 substores.append(store)
@@ -107,25 +107,26 @@ class PhotoStore {
         let fileManager = FileManager.default
         countAtLastReload = allItems.count
         let enumerator:FileManager.DirectoryEnumerator = fileManager.enumerator(at: url, includingPropertiesForKeys: [.typeIdentifierKey])!
-        // XX Sort out notification here
-//        let completionOperation = BlockOperation {
-//            print("Running final item in exifQueue")
-//            self.syncWithShared()
-//            periodicUpdate()
-//            self.quiescent = true
-//            NotificationCenter.default.post(name: Notification.Name.SyncYearTree, object: nil)
-//             NotificationCenter.default.post(name: Notification.Name.ActivityOff, object: nil)
-//        }
-        do {
-            while let f = enumerator.nextObject() as? URL {
-                var store = nextSubstore()
-                store.queue!.async {
-                    store.addFileToList(file: f, sourceNode: node)
-                }
+        
+        let dg = DispatchGroup()
+        while let f = enumerator.nextObject() as? URL {
+            var store = nextSubstore()
+            dg.enter()
+            store.queue!.async {
+                store.addFileToList(file: f, sourceNode: node)
+                dg.leave()
             }
-        } catch {
-            print(error.localizedDescription)
         }
+        print("Waiting for dispatch group!")
+
+        dg.wait()
+        print("All done!")
+        for store in substores {
+            store.syncWithShared(node)
+        }
+        NotificationCenter.default.post(name: NSNotification.Name.MorePhotosHaveArrived, object: nil)
+        NotificationCenter.default.post(name: Notification.Name.SyncYearTree, object: nil)
+        NotificationCenter.default.post(name: Notification.Name.ActivityOff, object: nil)
     }
     
     func addFileToList(file f: URL, sourceNode: BaseNode) {
@@ -156,8 +157,10 @@ class PhotoStore {
         fileInYearTree(item)
         processLocation(item)
 
-        if allItems.count > 300 {
+        if allItems.count > 400 {
             syncWithShared(sourceNode)
+            NotificationCenter.default.post(name: NSNotification.Name.MorePhotosHaveArrived, object: nil)
+            NotificationCenter.default.post(name: Notification.Name.SyncYearTree, object: nil)
         }
     }
     
@@ -165,14 +168,17 @@ class PhotoStore {
         var myItems = allItems
         allItems = []
         print("Calling sync from queue \(queue!.label)")
-        PhotoStore.shared.queue!.async(flags: .barrier) {
+        PhotoStore.shared.queue!.sync(flags: .barrier) {
             print("Entering barrier section for queue \(self.queue!.label)")
             PhotoStore.shared.allItems.append(contentsOf: myItems)
             PhotoStore.shared.filtersChanged = true
             // Add contents of year tree!
+            // XXX This is dumb
+            for var i in myItems {
+                PhotoStore.shared.fileInYearTree(i)
+            }
             sourceNode.count = sourceNode.count + myItems.count
             // Run periodic updates
-            NotificationCenter.default.post(name: NSNotification.Name.MorePhotosHaveArrived, object: nil)
             print("Leaving barrier section")
         }
     }
@@ -188,8 +194,9 @@ class PhotoStore {
     }
     
     func getYearTree() -> Dictionary<Int, YearTree> {
-        let yt = self.yearTree
-        return yt
+        return queue!.sync {
+            return self.yearTree
+        }
     }
     
     func rebuildYearTree() { // Should be barriered
@@ -239,7 +246,7 @@ class PhotoStore {
         clusterPrecision = mapscale
         clusterStore.removeAll()
         let divand = clusterPrecision / 2.0
-        print("Rounding to \(divand)")
+//        print("Rounding to \(divand)")
 
         for i in filteredItems {
             self.processLocation(i)

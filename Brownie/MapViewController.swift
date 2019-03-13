@@ -40,16 +40,16 @@ class MapViewController : NSViewController {
     }
     @objc func rebuildAnnotations () {
         let photoStore = PhotoStore.shared
-        print("Doing annotations")
+//        print("Doing annotations")
         DispatchQueue.main.async {
             PhotoStore.shared.reroundCoordinates(self.curMapScale)
             let annotationset = Set<PhotoCluster>(photoStore.clusterStore.values)
             let currentAnnotations = Set(self.mapView.annotations as! [PhotoCluster])
-                    print("Current annotations: \(currentAnnotations.count)")
+//                    print("Current annotations: \(currentAnnotations.count)")
             let toRemove = Array(currentAnnotations.subtracting(annotationset))
-                    print("Removing: \(toRemove.count)")
+//                    print("Removing: \(toRemove.count)")
             let toAdd = Array(annotationset.subtracting(currentAnnotations))
-                    print("Adding: \(toAdd.count)")
+//                    print("Adding: \(toAdd.count)")
             self.mapView.removeAnnotations(toRemove)
             self.mapView.addAnnotations(toAdd)
             self.collectionView.reloadData()

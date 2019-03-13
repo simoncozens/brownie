@@ -48,7 +48,7 @@ class OutlineController: NSViewController, NSOutlineViewDelegate, NSOutlineViewD
     }
     
     @objc func periodicUpdate(_ n: NSNotification) {
-        print("Reloading outline view")
+//        print("Reloading outline view")
         DispatchQueue.main.async {
             self.myOutlineView.expandItem(self.treeController!.arrangedObjects.descendant(at: IndexPath(index: 1)))
             self.myOutlineView.needsDisplay = true

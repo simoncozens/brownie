@@ -154,7 +154,7 @@ class PhotoStore {
         }
         
         // Finish off
-        fileInYearTree(item)
+//        fileInYearTree(item)
         processLocation(item)
 
         if allItems.count > 400 {
@@ -177,7 +177,8 @@ class PhotoStore {
             for var i in myItems {
                 PhotoStore.shared.fileInYearTree(i)
             }
-            sourceNode.count = sourceNode.count + myItems.count
+            // Source node is owned by main thread
+            DispatchQueue.main.async { sourceNode.count = sourceNode.count + myItems.count }
             // Run periodic updates
             print("Leaving barrier section")
         }
